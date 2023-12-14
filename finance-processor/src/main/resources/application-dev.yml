@@ -1,0 +1,10 @@
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    configprops:
+      show-values: always
+    env:
+      show-values: always
