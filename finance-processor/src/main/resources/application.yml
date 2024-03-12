@@ -1,0 +1,84 @@
+spring:
+  application:
+    name: fin-processor
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:}
+  kafka:
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:192.168.105.6:9092}
+    client-id: ${spring.application.name}
+    consumer:
+      max-poll-records: ${SPRING_KAFKA_CONSUMER_PROPERTIES_MAX_POLL_RECORDS:200}
+      properties:
+        max.poll.interval.ms: ${SPRING_KAFKA_CONSUMER_PROPERTIES_MAX_POLL_INTERVAL_MS:PT5m}
+    streams:
+      application-id: ${spring.application.name}
+      state-dir: ${SPRING_KAFKA_STREAMS_STATE_DIR:}
+      properties:
+        application.server: ${SPRING_KAFKA_STREAMS_PROPERTIES_APPLICATION_SERVER:localhost:8081}
+
+server:
+  port: ${SERVER_PORT:8081}
+  shutdown: graceful
+
+logging:
+  level:
+    org.zalando.logbook: TRACE
+    org.apache.kafka: INFO
+
+logbook:
+  exclude:
+    - /favicon.ico
+    - /actuator/**
+
+management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+          - info
+          - metrics
+          - mappings
+
+app:
+  cors:
+    access-control-allow-origin: ${APP_CORS_ACCESS_CONTROL_ALLOW_ORIGIN:http://localhost:3000}
+    access-control-max-age: ${APP_CORS_ACCESS_CONTROL_MAX_AGE:PT1h}
+    access-control-allow-headers: ${APP_CORS_ACCESS_CONTROL_ALLOW_HEADERS:*}
+  fin-processor:
+    connection-timeout: ${APP_FIN_PROCESSOR_CONNECTION_TIMEOUT:PT30s}
+    read-timeout: ${APP_FIN_PROCESSOR_READ_TIMEOUT:PT30s}
+    connection-max-idle-time: ${APP_FIN_PROCESSOR_CONNECTION_MAX_IDLE_TIME:PT30s}
+    connection-max-life-time: ${APP_FIN_PROCESSOR_CONNECTION_MAX_LIFE_TIME:PT30s}
+    connection-eviction-time: ${APP_FIN_PROCESSOR_CONNECTION_EVICTION_TIME:PT90s}
+  fin-predictor:
+    url: ${APP_FIN_PREDICTOR_URL:http://192.168.105.6:5000}
+    connection-timeout: ${APP_FIN_PREDICTOR_CONNECTION_TIMEOUT:PT30s}
+    read-timeout: ${APP_FIN_PREDICTOR_READ_TIMEOUT:PT30s}
+    connection-max-idle-time: ${APP_FIN_PREDICTOR_CONNECTION_MAX_IDLE_TIME:PT30s}
+    connection-max-life-time: ${APP_FIN_PREDICTOR_CONNECTION_MAX_LIFE_TIME:PT30s}
+    connection-eviction-time: ${APP_FIN_PREDICTOR_CONNECTION_EVICTION_TIME:PT90s}
+  stock-market-router-stream:
+    input-topic: ${APP_STOCK_MARKET_ROUTER_STREAM_INPUT_TOPIC:stock-market}
+    etf-topic-suffix: ${APP_STOCK_MARKET_ROUTER_STREAM_ETF_TOPIC_SUFFIX:-etf}
+    fund-topic-suffix: ${APP_STOCK_MARKET_ROUTER_STREAM_FUND_TOPIC_SUFFIX:-fund}
+    share-topic-suffix: ${APP_STOCK_MARKET_ROUTER_STREAM_SHARE_TOPIC_SUFFIX:-share}
+  stock-market-stream:
+    input-topics: ${APP_STOCK_MARKET_STREAM_INPUT_TOPICS:stock-market-etf,stock-market-fund,stock-market-share}
+    output-topic: ${APP_STOCK_MARKET_STREAM_PREDICTIONS_TOPIC:predictions}
+    window-type: ${APP_STOCK_MARKET_STREAM_WINDOW_TYPE:SESSION}
+    window: ${APP_STOCK_MARKET_STREAM_WINDOW:PT20s}
+    window-grace-period: ${APP_STOCK_MARKET_STREAM_WINDOW_GRACE_PERIOD:}
+    window-suppress-type: ${APP_STOCK_MARKET_STREAM_WINDOW_SUPPRESS_TYPE:WINDOW_CLOSE}
+    window-suppress-await-more-events: ${APP_STOCK_MARKET_STREAM_WINDOW_SUPPRESS_AWAIT_MORE_EVENTS:PT30s}
+    window-suppress-max-records: ${APP_STOCK_MARKET_STREAM_WINDOW_SUPPRESS_MAX_RECORDS:100}
+  top-predictions-stream:
+    tracking-limit: ${APP_TOP_PREDICTIONS_STREAM_TRACKING_LIMIT:20}
+  loss-predictions-stream:
+    percent: ${APP_LOSS_PREDICTIONS_STREAM_PERCENT:0.02}
