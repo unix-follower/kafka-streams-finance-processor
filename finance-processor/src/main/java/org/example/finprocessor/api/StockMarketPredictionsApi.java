@@ -9,7 +9,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RequestMapping("/api/v1")
-public interface StockMarketApi {
+public interface StockMarketPredictionsApi {
     @GetMapping("/predictions")
     Flux<StockPricePredictionResponse> getPredictions(
         ServerWebExchange exchange,

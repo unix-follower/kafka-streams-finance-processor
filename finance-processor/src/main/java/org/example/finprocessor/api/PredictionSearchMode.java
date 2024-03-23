@@ -3,7 +3,7 @@ package org.example.finprocessor.api;
 import java.util.Arrays;
 import java.util.Optional;
 
-public enum SearchMode {
+public enum PredictionSearchMode {
     ALL("all"),
     PREFIX_SCAN("prefixScan"),
     RANGE("range"),
@@ -12,7 +12,7 @@ public enum SearchMode {
 
     private final String mode;
 
-    SearchMode(String mode) {
+    PredictionSearchMode(String mode) {
         this.mode = mode;
     }
 
@@ -20,8 +20,8 @@ public enum SearchMode {
         return mode;
     }
 
-    public static Optional<SearchMode> of(String value) {
-        return Arrays.stream(SearchMode.values())
+    public static Optional<PredictionSearchMode> of(String value) {
+        return Arrays.stream(PredictionSearchMode.values())
             .filter(mode -> mode.getMode().equals(value))
             .findFirst();
     }

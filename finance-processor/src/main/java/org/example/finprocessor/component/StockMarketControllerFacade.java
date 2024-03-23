@@ -8,7 +8,6 @@ import org.apache.kafka.streams.state.QueryableStoreTypes;
 import org.apache.kafka.streams.state.ReadOnlyKeyValueStore;
 import org.example.finprocessor.api.GetPredictionsParams;
 import org.example.finprocessor.api.LossPredictionResponse;
-import org.example.finprocessor.api.SearchMode;
 import org.example.finprocessor.api.StockPricePredictionResponse;
 import org.example.finprocessor.api.TopPredictionResponse;
 import org.example.finprocessor.config.AppConfig;
@@ -41,7 +40,6 @@ public class StockMarketControllerFacade {
     private static final Logger logger = LoggerFactory.getLogger(StockMarketControllerFacade.class);
 
     private static final StringSerializer keySerializer = new StringSerializer();
-    private static final String REMOTE_HOST_FORMAT = "http://%s:%d";
 
     private static final Converter<StockPricePredictionDto, StockPricePredictionResponse>
         stockPricePredictionDtoToResponseConverter = new StockPricePredictionDtoToResponseConverter();
@@ -92,7 +90,7 @@ public class StockMarketControllerFacade {
             final var metadataCollection = getKafkaStreams().streamsMetadataForStore(storeName);
             final var urls = metadataCollection.stream()
                 .filter(streamsMetadata -> !ServerUtil.isSameHost(streamsMetadata.hostInfo(), request))
-                .map(metadata -> String.format(REMOTE_HOST_FORMAT, metadata.host(), metadata.port()))
+                .map(metadata -> String.format(Constants.REMOTE_HOST_FORMAT, metadata.host(), metadata.port()))
                 .toList();
             LoggerUtil.debug(logger, () -> "Remote hosts: {}", urls);
             return urls;
@@ -127,13 +125,13 @@ public class StockMarketControllerFacade {
             final KeyValueIterator<String, StockPricePredictionDto> iterator;
 
             switch (mode) {
-                case SearchMode.PREFIX_SCAN -> {
+                case PREFIX_SCAN -> {
                     final var prefix = predictionParams.prefix();
                     iterator = readOnlyKeyValueStore.prefixScan(prefix, keySerializer);
                 }
-                case SearchMode.RANGE -> iterator = readOnlyKeyValueStore.range(from, to);
-                case SearchMode.REVERSE_RANGE -> iterator = readOnlyKeyValueStore.reverseRange(from, to);
-                case SearchMode.REVERSE_ALL -> iterator = readOnlyKeyValueStore.reverseAll();
+                case RANGE -> iterator = readOnlyKeyValueStore.range(from, to);
+                case REVERSE_RANGE -> iterator = readOnlyKeyValueStore.reverseRange(from, to);
+                case REVERSE_ALL -> iterator = readOnlyKeyValueStore.reverseAll();
                 default -> iterator = readOnlyKeyValueStore.all();
             }
 
@@ -174,7 +172,9 @@ public class StockMarketControllerFacade {
                         predictionResponseMono = Mono.just(toPricePredictionDto(value));
                     }
                 } else {
-                    final var hostUrl = String.format(REMOTE_HOST_FORMAT, activeHost.host(), activeHost.port());
+                    final var hostUrl = String.format(
+                        Constants.REMOTE_HOST_FORMAT, activeHost.host(), activeHost.port()
+                    );
                     predictionResponseMono = financeProcessorClient.getPredictionByTicker(hostUrl, ticker);
                 }
                 return predictionResponseMono;
@@ -215,7 +215,9 @@ public class StockMarketControllerFacade {
                 if (ServerUtil.isActiveHost(exchange.getRequest(), activeHost)) {
                     predictionResponseFlux = getTopPredictionsFromLocalStore();
                 } else {
-                    final var hostUrl = String.format(REMOTE_HOST_FORMAT, activeHost.host(), activeHost.port());
+                    final var hostUrl = String.format(
+                        Constants.REMOTE_HOST_FORMAT, activeHost.host(), activeHost.port()
+                    );
                     predictionResponseFlux = financeProcessorClient.getTopPredictions(hostUrl);
                 }
                 return predictionResponseFlux;

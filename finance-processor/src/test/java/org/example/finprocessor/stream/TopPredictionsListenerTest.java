@@ -1,4 +1,4 @@
-package org.example.finprocessor.component;
+package org.example.finprocessor.stream;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.common.serialization.Serdes;
@@ -9,10 +9,8 @@ import org.apache.kafka.streams.state.KeyValueStore;
 import org.example.finprocessor.api.TopPredictionResponse;
 import org.example.finprocessor.config.AppConfig;
 import org.example.finprocessor.config.AppProperties;
-import org.example.finprocessor.config.FinProcessorProperties;
 import org.example.finprocessor.config.TopPredictionsStreamProperties;
 import org.example.finprocessor.stockmarket.api.StockPricePredictionDto;
-import org.example.finprocessor.stream.TopPredictionsListener;
 import org.example.finprocessor.test.AppPropertiesFactory;
 import org.example.finprocessor.test.KafkaStreamsPropertiesFactory;
 import org.example.finprocessor.test.StockPriceFactory;
@@ -27,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Properties;
-import java.util.Set;
 import java.util.SortedSet;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

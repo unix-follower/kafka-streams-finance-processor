@@ -1,15 +1,15 @@
 package org.example.finprocessor.test;
 
 import org.apache.kafka.streams.KeyValue;
-import org.apache.kafka.streams.state.KeyValueIterator;
+import org.apache.kafka.streams.state.WindowStoreIterator;
 
 import java.util.Collection;
 import java.util.Iterator;
 
-public class InMemoryKeyValueIterator<K, V> implements KeyValueIterator<K, V> {
-    private final Iterator<KeyValue<K, V>> iterator;
+public class InMemoryWindowStoreIterator<V> implements WindowStoreIterator<V> {
+    private final Iterator<KeyValue<Long, V>> iterator;
 
-    public InMemoryKeyValueIterator(Collection<KeyValue<K, V>> data) {
+    public InMemoryWindowStoreIterator(Collection<KeyValue<Long, V>> data) {
         this.iterator = data.iterator();
     }
 
@@ -18,7 +18,7 @@ public class InMemoryKeyValueIterator<K, V> implements KeyValueIterator<K, V> {
     }
 
     @Override
-    public K peekNextKey() {
+    public Long peekNextKey() {
         throw new UnsupportedOperationException();
     }
 
@@ -28,7 +28,7 @@ public class InMemoryKeyValueIterator<K, V> implements KeyValueIterator<K, V> {
     }
 
     @Override
-    public KeyValue<K, V> next() {
+    public KeyValue<Long, V> next() {
         return iterator.next();
     }
 }

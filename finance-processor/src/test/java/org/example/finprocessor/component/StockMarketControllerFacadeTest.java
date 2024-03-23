@@ -8,13 +8,13 @@ import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.state.HostInfo;
 import org.apache.kafka.streams.state.KeyValueIterator;
 import org.apache.kafka.streams.state.ReadOnlyKeyValueStore;
+import org.example.finprocessor.api.ErrorCode;
 import org.example.finprocessor.api.GetPredictionsParams;
 import org.example.finprocessor.api.LossPredictionResponse;
-import org.example.finprocessor.api.SearchMode;
+import org.example.finprocessor.api.PredictionSearchMode;
 import org.example.finprocessor.api.StockPricePredictionResponse;
 import org.example.finprocessor.api.TopPredictionResponse;
 import org.example.finprocessor.exception.EntityNotFoundException;
-import org.example.finprocessor.api.ErrorCode;
 import org.example.finprocessor.stockmarket.api.StockPricePredictionDto;
 import org.example.finprocessor.test.InMemoryKeyValueIterator;
 import org.example.finprocessor.test.ServerWebExchangeFactory;
@@ -47,9 +47,6 @@ import java.util.function.Consumer;
 
 @ExtendWith(MockitoExtension.class)
 class StockMarketControllerFacadeTest {
-    private static final GetPredictionsParams SEARCH_MODE_GET_PREDICTIONS_PARAMS
-        = new GetPredictionsParams(SearchMode.ALL, null, null, null);
-
     private final Converter<StockPricePredictionDto, StockPricePredictionResponse> toResponseConverter
         = new StockPricePredictionDtoToResponseConverter();
 
@@ -286,7 +283,9 @@ class StockMarketControllerFacadeTest {
         setupStateStore(stockPricePredictionStoreMock);
         setupStreamsMetadataForStore(Constants.PREDICTIONS_STORE);
 
-        final var params = new GetPredictionsParams(SearchMode.ALL, null, null, null);
+        final var params = new GetPredictionsParams(
+            PredictionSearchMode.ALL, null, null, null
+        );
         setupNodeEmptyResponse(StreamsMetadataFactory.NODE2_URL, params);
         setupNodeEmptyResponse(StreamsMetadataFactory.NODE3_URL, params);
 
@@ -299,7 +298,9 @@ class StockMarketControllerFacadeTest {
 
     @Test
     void test_getPredictions_with_range_mode_param_and_remote_hosts_return_nothing() {
-        final var params = new GetPredictionsParams(SearchMode.RANGE, null, null, null);
+        final var params = new GetPredictionsParams(
+            PredictionSearchMode.RANGE, null, null, null
+        );
 
         setupStateStore(stockPricePredictionStoreMock);
         final Consumer<List<StockPricePredictionDto>> setupStoreIterator = (list) ->
@@ -320,7 +321,9 @@ class StockMarketControllerFacadeTest {
     @Test
     void test_getPredictions_with_range_mode_param_and_from_A_and_remote_hosts_return_nothing() {
         final var from = "A";
-        final var params = new GetPredictionsParams(SearchMode.RANGE, from, null, null);
+        final var params = new GetPredictionsParams(
+            PredictionSearchMode.RANGE, from, null, null
+        );
 
         setupStateStore(stockPricePredictionStoreMock);
         final Consumer<List<StockPricePredictionDto>> setupStoreIterator = (list) ->
@@ -341,7 +344,9 @@ class StockMarketControllerFacadeTest {
     @Test
     void test_getPredictions_with_reverse_range_mode_param_and_from_V_and_remote_hosts_return_nothing() {
         final var from = "V";
-        final var params = new GetPredictionsParams(SearchMode.REVERSE_RANGE, from, null, null);
+        final var params = new GetPredictionsParams(
+            PredictionSearchMode.REVERSE_RANGE, from, null, null
+        );
 
         setupStateStore(stockPricePredictionStoreMock);
         final Consumer<List<StockPricePredictionDto>> setupStoreIterator = (list) ->
@@ -361,7 +366,9 @@ class StockMarketControllerFacadeTest {
 
     @Test
     void test_getPredictions_with_reverse_all_mode_param_and_remote_hosts_return_nothing() {
-        final var params = new GetPredictionsParams(SearchMode.REVERSE_ALL, null, null, null);
+        final var params = new GetPredictionsParams(
+            PredictionSearchMode.REVERSE_ALL, null, null, null
+        );
 
         setupStateStore(stockPricePredictionStoreMock);
         final Consumer<List<StockPricePredictionDto>> setupStoreIterator = (list) ->
@@ -382,7 +389,9 @@ class StockMarketControllerFacadeTest {
     @Test
     void test_getPredictions_with_prefixScan_mode_param_and_remote_hosts_return_nothing() {
         final var prefix = "V";
-        final var params = new GetPredictionsParams(SearchMode.PREFIX_SCAN, null, null, prefix);
+        final var params = new GetPredictionsParams(
+            PredictionSearchMode.PREFIX_SCAN, null, null, prefix
+        );
 
         setupStateStore(stockPricePredictionStoreMock);
         final Consumer<List<StockPricePredictionDto>> setupStoreIterator = (list) ->
