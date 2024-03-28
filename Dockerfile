@@ -4,7 +4,8 @@ WORKDIR /opt
 
 ARG APP_VERSION=1.0
 
-COPY finance-processor/build/libs/finance-processor-$APP_VERSION.jar ./app.jar
+RUN jar_file=$(ls | grep -v '.*-plain.jar')
+COPY $jar_file ./app.jar
 
 EXPOSE 8080
 EXPOSE 5005
