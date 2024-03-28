@@ -59,4 +59,4 @@ jobs:
 
       - name: Build Docker image
         shell: bash
-        run: docker build --build-arg APP_VERSION=$APP_VERSION -t finance-processor:latest .
+        run: docker build --build-arg APP_VERSION=${{ env.APP_VERSION }} -t finance-processor:latest .
