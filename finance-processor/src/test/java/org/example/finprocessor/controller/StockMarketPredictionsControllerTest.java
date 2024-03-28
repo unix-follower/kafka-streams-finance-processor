@@ -3,7 +3,7 @@ package org.example.finprocessor.controller;
 import org.apache.commons.lang3.tuple.Pair;
 import org.example.finprocessor.api.GetPredictionsParams;
 import org.example.finprocessor.api.LossPredictionResponse;
-import org.example.finprocessor.api.SearchMode;
+import org.example.finprocessor.api.PredictionSearchMode;
 import org.example.finprocessor.api.StockPricePredictionResponse;
 import org.example.finprocessor.component.StockMarketControllerFacade;
 import org.example.finprocessor.component.StockPricePredictionDtoToResponseConverter;
@@ -13,7 +13,6 @@ import org.example.finprocessor.test.StockPriceFactory;
 import org.example.finprocessor.test.StockPricePredictionDtoFactory;
 import org.example.finprocessor.test.StockPricePredictionDtoUtil;
 import org.example.finprocessor.test.TopPredictionFactory;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,20 +29,25 @@ import reactor.test.StepVerifier;
 
 import java.math.BigDecimal;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 @ExtendWith(MockitoExtension.class)
-class StockMarketControllerTest {
+class StockMarketPredictionsControllerTest {
     private final Converter<StockPricePredictionDto, StockPricePredictionResponse> toResponseConverter
         = new StockPricePredictionDtoToResponseConverter();
 
-    private final ArgumentCaptor<GetPredictionsParams> argumentCaptor = ArgumentCaptor.forClass(GetPredictionsParams.class);
+    private final ArgumentCaptor<GetPredictionsParams> argumentCaptor =
+        ArgumentCaptor.forClass(GetPredictionsParams.class);
 
     @Mock
     private StockMarketControllerFacade facadeMock;
-    private StockMarketController controller;
+    private StockMarketPredictionsController controller;
 
     @BeforeEach
     void setUp() {
-        controller = new StockMarketController(facadeMock);
+        controller = new StockMarketPredictionsController(facadeMock);
     }
 
     private Pair<StockPricePredictionResponse, StockPricePredictionDto> createStockPricePredictionResponse() {
@@ -74,10 +78,7 @@ class StockMarketControllerTest {
             // when
             .create(controller.getPredictions(
                 mockServerWebExchange,
-                mode,
-                null,
-                null,
-                null
+                mode, null, null, null
             ))
             // then
             .expectNext(expectedResponse)
@@ -87,17 +88,17 @@ class StockMarketControllerTest {
             Mockito.eq(mockServerWebExchange), argumentCaptor.capture()
         );
 
-        Assertions.assertEquals(1, argumentCaptor.getAllValues().size());
+        assertEquals(1, argumentCaptor.getAllValues().size());
         final var predictionsParams = argumentCaptor.getValue();
-        Assertions.assertEquals(SearchMode.ALL, predictionsParams.mode());
-        Assertions.assertNull(predictionsParams.from());
-        Assertions.assertNull(predictionsParams.to());
-        Assertions.assertNull(predictionsParams.prefix());
+        assertEquals(PredictionSearchMode.ALL, predictionsParams.mode());
+        assertNull(predictionsParams.from());
+        assertNull(predictionsParams.to());
+        assertNull(predictionsParams.prefix());
     }
 
     @Test
     void test_getPredictions_with_all_search_mode() {
-        execute_test_getPredictions_with_all_search_mode(SearchMode.ALL.getMode());
+        execute_test_getPredictions_with_all_search_mode(PredictionSearchMode.ALL.getMode());
     }
 
     @Test
@@ -125,7 +126,7 @@ class StockMarketControllerTest {
             // when
             .create(controller.getPredictions(
                 mockServerWebExchange,
-                SearchMode.PREFIX_SCAN.getMode(),
+                PredictionSearchMode.PREFIX_SCAN.getMode(),
                 null,
                 null,
                 prefix
@@ -138,12 +139,12 @@ class StockMarketControllerTest {
             Mockito.eq(mockServerWebExchange), argumentCaptor.capture()
         );
 
-        Assertions.assertEquals(1, argumentCaptor.getAllValues().size());
+        assertEquals(1, argumentCaptor.getAllValues().size());
         final var predictionsParams = argumentCaptor.getValue();
-        Assertions.assertEquals(SearchMode.PREFIX_SCAN, predictionsParams.mode());
-        Assertions.assertNull(predictionsParams.from());
-        Assertions.assertNull(predictionsParams.to());
-        Assertions.assertEquals(prefix, predictionsParams.prefix());
+        assertEquals(PredictionSearchMode.PREFIX_SCAN, predictionsParams.mode());
+        assertNull(predictionsParams.from());
+        assertNull(predictionsParams.to());
+        assertEquals(prefix, predictionsParams.prefix());
     }
 
     @Test
@@ -156,16 +157,13 @@ class StockMarketControllerTest {
             // when
             .create(controller.getPredictions(
                 mockServerWebExchange,
-                SearchMode.PREFIX_SCAN.getMode(),
-                null,
-                null,
-                null
+                PredictionSearchMode.PREFIX_SCAN.getMode(), null, null, null
             ))
             // then
             .expectErrorSatisfies(throwable -> {
-                Assertions.assertInstanceOf(ResponseStatusException.class, throwable);
+                assertInstanceOf(ResponseStatusException.class, throwable);
                 final var e = (ResponseStatusException) throwable;
-                Assertions.assertEquals(HttpStatus.BAD_REQUEST.value(), e.getStatusCode().value());
+                assertEquals(HttpStatus.BAD_REQUEST.value(), e.getStatusCode().value());
             })
             .verify();
 
@@ -184,10 +182,7 @@ class StockMarketControllerTest {
         StepVerifier
             // when
             .create(controller.getPredictionsFromLocalStore(
-                SearchMode.ALL.getMode(),
-                null,
-                null,
-                null
+                PredictionSearchMode.ALL.getMode(), null, null, null
             ))
             // then
             .expectNext(expectedResponse)
@@ -197,12 +192,12 @@ class StockMarketControllerTest {
             argumentCaptor.capture()
         );
 
-        Assertions.assertEquals(1, argumentCaptor.getAllValues().size());
+        assertEquals(1, argumentCaptor.getAllValues().size());
         final var predictionsParams = argumentCaptor.getValue();
-        Assertions.assertEquals(SearchMode.ALL, predictionsParams.mode());
-        Assertions.assertNull(predictionsParams.from());
-        Assertions.assertNull(predictionsParams.to());
-        Assertions.assertNull(predictionsParams.prefix());
+        assertEquals(PredictionSearchMode.ALL, predictionsParams.mode());
+        assertNull(predictionsParams.from());
+        assertNull(predictionsParams.to());
+        assertNull(predictionsParams.prefix());
     }
 
     @Test
@@ -210,16 +205,13 @@ class StockMarketControllerTest {
         StepVerifier
             // when
             .create(controller.getPredictionsFromLocalStore(
-                SearchMode.PREFIX_SCAN.getMode(),
-                null,
-                null,
-                null
+                PredictionSearchMode.PREFIX_SCAN.getMode(), null, null, null
             ))
             // then
             .expectErrorSatisfies(throwable -> {
-                Assertions.assertInstanceOf(ResponseStatusException.class, throwable);
+                assertInstanceOf(ResponseStatusException.class, throwable);
                 final var e = (ResponseStatusException) throwable;
-                Assertions.assertEquals(HttpStatus.BAD_REQUEST.value(), e.getStatusCode().value());
+                assertEquals(HttpStatus.BAD_REQUEST.value(), e.getStatusCode().value());
             })
             .verify();
 

@@ -2,8 +2,8 @@ package org.example.finprocessor.controller;
 
 import org.example.finprocessor.api.GetPredictionsParams;
 import org.example.finprocessor.api.LossPredictionResponse;
-import org.example.finprocessor.api.SearchMode;
-import org.example.finprocessor.api.StockMarketApi;
+import org.example.finprocessor.api.PredictionSearchMode;
+import org.example.finprocessor.api.StockMarketPredictionsApi;
 import org.example.finprocessor.api.StockPricePredictionResponse;
 import org.example.finprocessor.api.TopPredictionResponse;
 import org.example.finprocessor.component.StockMarketControllerFacade;
@@ -18,19 +18,21 @@ import reactor.core.publisher.Mono;
 import java.util.Optional;
 
 @RestController
-public class StockMarketController implements StockMarketApi {
+public class StockMarketPredictionsController implements StockMarketPredictionsApi {
     private final StockMarketControllerFacade facade;
 
-    public StockMarketController(StockMarketControllerFacade facade) {
+    public StockMarketPredictionsController(StockMarketControllerFacade facade) {
         this.facade = facade;
     }
 
-    private static SearchMode parseSearchMode(String mode) {
-        return SearchMode.of(mode).orElse(SearchMode.ALL);
+    private static PredictionSearchMode parseSearchMode(String mode) {
+        return PredictionSearchMode.of(mode).orElse(PredictionSearchMode.ALL);
     }
 
-    private static Optional<ResponseStatusException> validateSearchModeParam(String prefix, SearchMode searchMode) {
-        if (searchMode == SearchMode.PREFIX_SCAN && prefix == null) {
+    private static Optional<ResponseStatusException> validateSearchModeParam(
+        String prefix, PredictionSearchMode searchMode
+    ) {
+        if (searchMode == PredictionSearchMode.PREFIX_SCAN && prefix == null) {
             final var responseStatusException = new ResponseStatusException(
                 HttpStatusCode.valueOf(HttpStatus.BAD_REQUEST.value()),
                 "The prefix is not provided"

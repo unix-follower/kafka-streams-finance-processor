@@ -1,4 +1,4 @@
-package org.example.finprocessor.component;
+package org.example.finprocessor.stream;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.common.serialization.Serdes;
@@ -9,7 +9,6 @@ import org.apache.kafka.streams.test.TestRecord;
 import org.example.finprocessor.config.AppConfig;
 import org.example.finprocessor.config.AppProperties;
 import org.example.finprocessor.stockmarket.api.StockPrice;
-import org.example.finprocessor.stream.StockMarketRouterStreamListener;
 import org.example.finprocessor.test.AppPropertiesFactory;
 import org.example.finprocessor.test.KafkaStreamsPropertiesFactory;
 import org.example.finprocessor.test.StockPriceFactory;

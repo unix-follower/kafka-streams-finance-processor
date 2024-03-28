@@ -62,21 +62,38 @@ public class AppPropertiesFactory {
         Set.of("*")
     );
 
-    private final Supplier<StockMarketStreamProperties> stockMarketStreamPropertiesSupplier = () ->
-        new StockMarketStreamProperties(
+    private static StockMarketStreamProperties createProps(WindowType type) {
+        return new StockMarketStreamProperties(
             Set.of(
                 "-etf",
                 "-fund",
                 "-share"
             ),
             "predictions",
-                DURATION_10_SEC,
-                null,
-                WindowType.SESSION,
-                WindowSuppressType.WINDOW_CLOSE,
-                DURATION_30_SEC,
-                100
-            );
+            DURATION_10_SEC,
+            null,
+            type,
+            WindowSuppressType.WINDOW_CLOSE,
+            DURATION_30_SEC,
+            100
+        );
+    }
+
+    private Supplier<StockMarketStreamProperties> stockMarketStreamPropertiesSupplier = () ->
+        createProps(WindowType.SESSION);
+
+    public static final Supplier<StockMarketStreamProperties> PROPS_SUPPLIER_WITH_TIME_WINDOW_MODE = () ->
+        createProps(WindowType.TIME);
+
+    public static final Supplier<StockMarketStreamProperties> PROPS_SUPPLIER_WITH_SLIDING_WINDOW_MODE = () ->
+        createProps(WindowType.SLIDING);
+
+    public AppPropertiesFactory setStockMarketStreamPropertiesSupplier(
+        Supplier<StockMarketStreamProperties> stockMarketStreamPropertiesSupplier
+    ) {
+        this.stockMarketStreamPropertiesSupplier = stockMarketStreamPropertiesSupplier;
+        return this;
+    }
 
     private Supplier<TopPredictionsStreamProperties> topPredictionsStreamPropertiesSupplier = () ->
         new TopPredictionsStreamProperties(

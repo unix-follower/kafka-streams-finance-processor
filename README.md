@@ -29,7 +29,7 @@ docker run \
   --publish 8080:8080 \
   --publish 5005:5005 \
   -e SERVER_PORT=8080 \
-  -e SPRING_KAFKA_BOOTSTRAP_SERVERS=192.168.105.6:9092 \
+  -e SPRING_KAFKA_BOOTSTRAP_SERVERS=192.168.105.6:9094 \
   -e SPRING_KAFKA_STREAMS_PROPERTIES_APPLICATION_SERVER=http://finance-processor-node-1:8080 \
   -e APP_FIN_PREDICTOR_URL=http://finance-predictor:5000 \
   -e APP_STOCK_MARKET_STREAM_WINDOW=PT30s \
@@ -45,7 +45,7 @@ docker run \
   --publish 8081:8080 \
   --publish 5006:5005 \
   -e SERVER_PORT=8080 \
-  -e SPRING_KAFKA_BOOTSTRAP_SERVERS=192.168.105.6:9092 \
+  -e SPRING_KAFKA_BOOTSTRAP_SERVERS=192.168.105.6:9094 \
   -e SPRING_KAFKA_STREAMS_PROPERTIES_APPLICATION_SERVER=http://finance-processor-node-2:8080 \
   -e APP_FIN_PREDICTOR_URL=http://finance-predictor:5000 \
   -e APP_STOCK_MARKET_STREAM_WINDOW=PT30s \
@@ -141,6 +141,30 @@ curl -v ${fin_processor_url}/api/v1/top/predictions | jq
 curl -v ${fin_processor_url}/api/v1/local/top/predictions | jq
 curl -v ${fin_processor_url}/api/v1/loss/predictions | jq
 curl -v ${fin_processor_url}/api/v1/local/loss/predictions | jq
+```
+#### Get prices
+##### Get time-based windows
+```shell
+curl -v "${fin_processor_url}/api/v1/prices?mode=all" | jq
+curl -v "${fin_processor_url}/api/v1/prices?mode=backwardAll" | jq
+curl -v "${fin_processor_url}/api/v1/prices?mode=fetch&key=VOO&timeFrom=2024-03-26T19:04:40.859Z&timeTo=2024-03-26T19:05:11.146Z" | jq
+curl -v "${fin_processor_url}/api/v1/prices?mode=fetchKeyRange&keyFrom=A&keyTo=C&timeFrom=2024-03-26T19:04:40.859Z&timeTo=2024-03-26T19:05:11.146Z" | jq
+curl -v "${fin_processor_url}/api/v1/prices?mode=fetchAll&timeFrom=2024-03-26T19:04:40.859Z&timeTo=2024-03-26T19:05:11.146Z" | jq
+curl -v "${fin_processor_url}/api/v1/prices?mode=backwardFetch&key=VOO&timeFrom=2024-03-26T19:04:40.859Z&timeTo=2024-03-26T19:05:11.146Z" | jq
+curl -v "${fin_processor_url}/api/v1/prices?mode=backwardFetchAll&timeFrom=2024-03-26T19:04:40.859Z&timeTo=2024-03-26T19:05:11.146Z" | jq
+curl -v "${fin_processor_url}/api/v1/prices?mode=backwardFetchKeyRange&keyFrom=A&keyTo=C&timeFrom=2024-03-26T19:04:40.859Z&timeTo=2024-03-26T19:05:11.146Z" | jq
+```
+##### Get session-based windows
+```shell
+curl -v "${fin_processor_url}/api/v1/prices?mode=sFetch&key=AAPL" | jq
+curl -v "${fin_processor_url}/api/v1/prices?mode=sFetch&key=AAL" | jq
+curl -v "${fin_processor_url}/api/v1/prices?mode=sessionWindowFetchKeyRange&keyFrom=A&keyTo=C" | jq
+curl -v "${fin_processor_url}/api/v1/prices?mode=sBackwardFetch&key=AAPL" | jq
+curl -v "${fin_processor_url}/api/v1/prices?mode=sFetchSession&key=AAPL&timeFrom=2024-03-26T19:04:40.859Z&timeTo=2024-03-26T19:05:11.146Z" | jq
+curl -v "${fin_processor_url}/api/v1/prices?mode=sFindSessions&key=AAPL&timeFrom=2024-03-26T19:04:40.859Z&timeTo=2024-03-26T19:05:11.146Z" | jq
+curl -v "${fin_processor_url}/api/v1/prices?mode=sFindSessions&key=AAPL&timeFrom=2024-03-26T19:04:40.859Z&timeTo=2024-03-26T19:05:11.146Z" | jq
+curl -v "${fin_processor_url}/api/v1/prices?mode=sBackwardFetchKeyRange&keyFrom=A&keyTo=C" | jq
+curl -v "${fin_processor_url}/api/v1/prices?mode=sBackwardFindSessions&key=AAPL&timeFrom=2024-03-26T19:04:40.859Z&timeTo=2024-03-26T19:05:11.146Z" | jq
 ```
 ### Reset Kafka streams application
 ```shell
