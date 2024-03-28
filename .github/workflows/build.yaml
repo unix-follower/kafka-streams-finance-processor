@@ -63,7 +63,4 @@ jobs:
 
       - name: Build Docker image
         shell: bash
-        run: |
-          echo $APP_VERSION
-          echo $GITHUB_ENV
-          docker build --build-arg APP_VERSION=${{ env.APP_VERSION }} -t finance-processor:latest .
+        run: docker build --build-arg APP_VERSION=${{ env.APP_VERSION }} -t finance-processor:latest .

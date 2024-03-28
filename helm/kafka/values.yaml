@@ -1,0 +1,25 @@
+extraConfig: |
+  offsets.topic.replication.factor: 1
+  transaction.state.log.replication.factor: 1
+  transaction.state.log.min.isr: 1
+
+controller:
+  replicaCount: 1
+
+externalAccess:
+  enabled: true
+  controller:
+    service:
+      type: NodePort
+      externalIPs:
+        - 192.168.105.6
+
+listeners:
+  controller:
+    protocol: PLAINTEXT
+  interbroker:
+    protocol: PLAINTEXT
+  client:
+    protocol: PLAINTEXT
+  external:
+    protocol: PLAINTEXT
