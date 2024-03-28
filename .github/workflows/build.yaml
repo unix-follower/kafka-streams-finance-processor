@@ -51,7 +51,11 @@ jobs:
 
       - name: Set app version
         run: |
-          APP_VERSION="${{ inputs.app-version-override }}" || APP_VERSION="2024.03.${{ github.run_id }}-SNAPSHOT"
+          if [ -n "${{ inputs.app-version-override }}" ]; then
+            APP_VERSION="${{ inputs.app-version-override }}"
+          else
+            APP_VERSION="2024.03.${{ github.run_id }}-SNAPSHOT"
+          fi
           echo "APP_VERSION=$APP_VERSION" >> $GITHUB_ENV
 
       - name: Build project
