@@ -1,7 +1,7 @@
 ### Docker commands
 #### Build an image
 ```shell
-docker build --build-arg APP_VERSION=0.0.1-SNAPSHOT -t finance-processor:latest .
+docker build --build-arg APP_VERSION=2024.03.1-SNAPSHOT -t finance-processor:latest .
 ```
 #### Start Kafka in Docker container
 ```shell

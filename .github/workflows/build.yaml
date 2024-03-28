@@ -2,6 +2,10 @@ name: Build
 
 on:
   workflow_dispatch:
+    inputs:
+      app-version-override:
+        description: "Manually specified app version. Example: 2024.03.0-SNAPSHOT"
+        required: false
   push:
     branches:
       - main
@@ -45,9 +49,14 @@ jobs:
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v3.1.0
 
+      - name: Set app version
+        run: |
+          APP_VERSION="${{ inputs.app-version-override }}" || APP_VERSION="2024.03.${{ github.run_id }}-SNAPSHOT"
+          echo "APP_VERSION=$APP_VERSION" >> $GITHUB_ENV
+
       - name: Build project
         run: ./gradlew clean build
 
       - name: Build Docker image
         shell: bash
-        run: docker build --build-arg APP_VERSION=2024.03.${{ github.run_id }}-SNAPSHOT -t finance-processor:latest .
+        run: docker build --build-arg APP_VERSION=$APP_VERSION -t finance-processor:latest .
