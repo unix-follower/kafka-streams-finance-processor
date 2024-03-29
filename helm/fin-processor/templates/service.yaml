@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "fin-processor.fullname" . }}
+  labels:
+    {{- include "fin-processor.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  externalIPs:
+    - 192.168.105.6
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "fin-processor.selectorLabels" . | nindent 4 }}
