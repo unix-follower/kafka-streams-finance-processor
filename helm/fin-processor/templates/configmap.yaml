@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-configmap
+  labels:
+    {{- include "fin-processor.labels" . | nindent 4 }}
+data:
+  SERVER_PORT: "8080"
+  SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka.kafka.svc.cluster.local:9092
+  SPRING_KAFKA_STREAMS_PROPERTIES_APPLICATION_SERVER: http://fin-processor.fin-processor.svc.cluster.local:8080
+  APP_FIN_PREDICTOR_URL: http://fin-predictor.fin-processor.svc.cluster.local:5000
+  APP_STOCK_MARKET_STREAM_WINDOW: PT30s
