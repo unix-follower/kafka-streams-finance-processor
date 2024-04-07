@@ -14,7 +14,7 @@ podSecurityContext: { }
 securityContext: { }
 
 service:
-  type: LoadBalancer
+  type: NodePort
   port: 8080
 
 ingress:
@@ -27,25 +27,25 @@ ingress:
           pathType: ImplementationSpecific
 
 resources:
-  limits:
-    cpu: 512m
-    memory: 1024Mi
   requests:
-    cpu: 512m
+    cpu: 500m
     memory: 1024Mi
+  limits:
+    cpu: 2000m
+    memory: 2048Mi
 
 livenessProbe:
   httpGet:
     path: /actuator/health/liveness
     port: 8080
-  initialDelaySeconds: 50
+  initialDelaySeconds: 60
   periodSeconds: 30
   failureThreshold: 3
 readinessProbe:
   httpGet:
     path: /actuator/health/readiness
     port: 8080
-  initialDelaySeconds: 50
+  initialDelaySeconds: 60
   periodSeconds: 30
   failureThreshold: 3
 
