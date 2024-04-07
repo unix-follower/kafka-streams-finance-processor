@@ -1,7 +1,7 @@
 ### Docker commands
 #### Build an image
 ```shell
-docker build --build-arg APP_VERSION=2024.03.1-SNAPSHOT -t finance-processor:latest .
+docker build --build-arg APP_VERSION=2024.04.0 -t finance-processor:latest .
 ```
 #### Start Kafka in Docker container
 ```shell
@@ -58,7 +58,7 @@ docker exec -it finance-processor-node-1 bash
 ### Define variables
 ```shell
 kafka_dir=/opt/kafka_2.13-3.5.0/bin
-bootstrap_server="$(minikube ip):9092"
+bootstrap_server="$(minikube ip):9094"
 fin_processor_url="$(minikube ip):8080"
 topic=stock-market
 #topic=stock-market.DLT

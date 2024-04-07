@@ -19,9 +19,7 @@ service:
 
 ingress:
   enabled: true
-  className: ""
-  annotations:
-    kubernetes.io/ingress.class: nginx
+  className: nginx
   hosts:
     - host: fin-processor.fin-processor.svc.cluster.local
       paths:
