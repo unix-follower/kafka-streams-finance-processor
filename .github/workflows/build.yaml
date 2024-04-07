@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       app-version-override:
-        description: "Manually specified app version. Example: 2024.03.0-SNAPSHOT"
+        description: "Manually specified app version. Example: 2024.04.0"
         required: false
   push:
     branches:
@@ -38,7 +38,7 @@ jobs:
 
     steps:
       - name: Git checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.1.1
 
       - name: Setup Java
         uses: actions/setup-java@v4.2.1
@@ -54,7 +54,7 @@ jobs:
           if [ -n "${{ inputs.app-version-override }}" ]; then
             APP_VERSION="${{ inputs.app-version-override }}"
           else
-            APP_VERSION="2024.03.${{ github.run_id }}-SNAPSHOT"
+            APP_VERSION="2024.04.${{ github.run_id }}"
           fi
           echo "APP_VERSION=$APP_VERSION" >> $GITHUB_ENV
 
