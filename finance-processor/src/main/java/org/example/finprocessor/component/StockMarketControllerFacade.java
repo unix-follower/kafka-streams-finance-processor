@@ -2,6 +2,7 @@ package org.example.finprocessor.component;
 
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.streams.KafkaStreams;
+import org.apache.kafka.streams.KeyQueryMetadata;
 import org.apache.kafka.streams.StoreQueryParameters;
 import org.apache.kafka.streams.state.KeyValueIterator;
 import org.apache.kafka.streams.state.QueryableStoreTypes;
@@ -116,28 +117,28 @@ public class StockMarketControllerFacade {
 
     public Flux<StockPricePredictionResponse> getPredictionsFromLocalStore(GetPredictionsParams predictionParams) {
         return Flux.<StockPricePredictionResponse>create(fluxSink -> {
-            final var mode = predictionParams.mode();
-            final var to = predictionParams.to();
-            final var from = predictionParams.from();
+                final var mode = predictionParams.mode();
+                final var to = predictionParams.to();
+                final var from = predictionParams.from();
 
-            final var readOnlyKeyValueStore = getStockPricePredictionLocalStore();
+                final var readOnlyKeyValueStore = getStockPricePredictionLocalStore();
 
-            final KeyValueIterator<String, StockPricePredictionDto> iterator;
+                final KeyValueIterator<String, StockPricePredictionDto> iterator;
 
-            switch (mode) {
-                case PREFIX_SCAN -> {
-                    final var prefix = predictionParams.prefix();
-                    iterator = readOnlyKeyValueStore.prefixScan(prefix, keySerializer);
+                switch (mode) {
+                    case PREFIX_SCAN -> {
+                        final var prefix = predictionParams.prefix();
+                        iterator = readOnlyKeyValueStore.prefixScan(prefix, keySerializer);
+                    }
+                    case RANGE -> iterator = readOnlyKeyValueStore.range(from, to);
+                    case REVERSE_RANGE -> iterator = readOnlyKeyValueStore.reverseRange(from, to);
+                    case REVERSE_ALL -> iterator = readOnlyKeyValueStore.reverseAll();
+                    default -> iterator = readOnlyKeyValueStore.all();
                 }
-                case RANGE -> iterator = readOnlyKeyValueStore.range(from, to);
-                case REVERSE_RANGE -> iterator = readOnlyKeyValueStore.reverseRange(from, to);
-                case REVERSE_ALL -> iterator = readOnlyKeyValueStore.reverseAll();
-                default -> iterator = readOnlyKeyValueStore.all();
-            }
 
-            emitPredictions(iterator, fluxSink);
-            fluxSink.complete();
-        })
+                emitPredictions(iterator, fluxSink);
+                fluxSink.complete();
+            })
             .log("getPredictionsFromLocalStore", Level.INFO, true, SignalType.values());
     }
 
@@ -158,33 +159,56 @@ public class StockMarketControllerFacade {
     public Mono<StockPricePredictionResponse> getPredictionByTicker(
         ServerWebExchange exchange, String ticker
     ) {
-        return Mono.fromSupplier(() -> {
+        return Mono.<StockPricePredictionResponse>create(sink -> {
                 final var metadataForKey = getKafkaStreams()
                     .queryMetadataForKey(Constants.PREDICTIONS_STORE, ticker, keySerializer);
 
-                var predictionResponseMono = Mono.<StockPricePredictionResponse>empty();
-                final var activeHost = metadataForKey.activeHost();
-                if (ServerUtil.isActiveHost(exchange.getRequest(), activeHost)) {
-                    final var readOnlyKeyValueStore = getStockPricePredictionLocalStore();
-
-                    final var value = readOnlyKeyValueStore.get(ticker);
-                    if (value != null) {
-                        predictionResponseMono = Mono.just(toPricePredictionDto(value));
-                    }
-                } else {
-                    final var hostUrl = String.format(
-                        Constants.REMOTE_HOST_FORMAT, activeHost.host(), activeHost.port()
-                    );
-                    predictionResponseMono = financeProcessorClient.getPredictionByTicker(hostUrl, ticker);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Active host: {}", metadataForKey.activeHost());
+                    logger.debug("Standby hosts: {}", metadataForKey.standbyHosts());
                 }
-                return predictionResponseMono;
+
+                final var predictionResponseMono = findKeyHolderForSearchByTicker(
+                    exchange, ticker, metadataForKey
+                );
+                predictionResponseMono
+                    .materialize()
+                    .subscribe(signal -> {
+                        if (signal.isOnNext()) {
+                            sink.success(signal.get());
+                        } else {
+                            if (signal.isOnError() && signal.hasError()) {
+                                sink.error(Objects.requireNonNull(signal.getThrowable()));
+                            } else {
+                                sink.error(new EntityNotFoundException(ErrorCode.TICKER_NOT_FOUND));
+                            }
+                        }
+                    });
             })
-            .flatMap(responseMono -> responseMono)
-            .switchIfEmpty(Mono.error(
-                new EntityNotFoundException(ErrorCode.TICKER_NOT_FOUND)
-            ))
             .log("getPredictionByTicker", Level.INFO, true, SignalType.values())
             .timeout(AppConfig.DEFAULT_PUBLISHER_TIMEOUT);
+    }
+
+    private Mono<StockPricePredictionResponse> findKeyHolderForSearchByTicker(
+        ServerWebExchange exchange, String ticker, KeyQueryMetadata keyQueryMetadata
+    ) {
+        var predictionResponseMono = Mono.<StockPricePredictionResponse>empty();
+
+        final var activeHost = keyQueryMetadata.activeHost();
+        if (ServerUtil.isActiveHost(exchange.getRequest(), activeHost)) {
+            final var readOnlyKeyValueStore = getStockPricePredictionLocalStore();
+
+            final var value = readOnlyKeyValueStore.get(ticker);
+            if (value != null) {
+                predictionResponseMono = Mono.just(toPricePredictionDto(value));
+            }
+        } else {
+            final var hostUrl = String.format(
+                Constants.REMOTE_HOST_FORMAT, activeHost.host(), activeHost.port()
+            );
+            predictionResponseMono = financeProcessorClient.getPredictionByTicker(hostUrl, ticker);
+        }
+        return predictionResponseMono;
     }
 
     public Flux<TopPredictionResponse> getTopPredictionsFromLocalStore() {

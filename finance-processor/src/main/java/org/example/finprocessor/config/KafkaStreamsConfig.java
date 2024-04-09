@@ -9,6 +9,7 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.streams.StreamsConfig;
 import org.example.finprocessor.exception.FinProcessorProductionExceptionHandler;
 import org.example.finprocessor.exception.FinProcessorStreamsUncaughtExceptionHandler;
+import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,11 +24,18 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.DeadLetterPublishingRecoverer;
 import org.springframework.kafka.streams.RecoveringDeserializationExceptionHandler;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.time.Duration;
+import java.util.Map;
+import java.util.regex.Pattern;
 
 @Configuration
 @EnableKafkaStreams
 public class KafkaStreamsConfig {
+    private static final byte APP_SERVER_HOST_REGEX_GROUP_INDEX = 1;
+    private static final byte APP_SERVER_PORT_REGEX_GROUP_INDEX = 2;
+
     private final KafkaProperties kafkaProperties;
 
     private final AppProperties appProperties;
@@ -62,7 +70,31 @@ public class KafkaStreamsConfig {
             props.put(StreamsConfig.STATE_DIR_CONFIG, System.getProperty("java.io.tmpdir"));
         }
 
+        configureApplicationServerProp(props);
+
         return new KafkaStreamsConfiguration(props);
+    }
+
+    private static void configureApplicationServerProp(Map<String, Object> props) {
+        final var appServer = (String) props.get(StreamsConfig.APPLICATION_SERVER_CONFIG);
+        final var appServerPattern = Pattern.compile("^\\$\\((.*):(\\d{2,4})\\)$");
+        final var matcher = appServerPattern.matcher(appServer);
+        if (matcher.matches()) {
+            final var host = matcher.group(APP_SERVER_HOST_REGEX_GROUP_INDEX);
+            if (!"localhostIPv4".equalsIgnoreCase(host)) {
+                throw new UnsupportedOperationException(String.format("Unsupported operand: %s", host));
+            }
+
+            final int port = Integer.parseInt(matcher.group(APP_SERVER_PORT_REGEX_GROUP_INDEX));
+            final InetAddress localHostIpv4;
+            try {
+                localHostIpv4 = InetAddress.getLocalHost();
+            } catch (UnknownHostException e) {
+                throw new BeanCreationException(e.getMessage(), e);
+            }
+            final var ip4hostAddress = localHostIpv4.getHostAddress();
+            props.put(StreamsConfig.APPLICATION_SERVER_CONFIG, String.format("%s:%d", ip4hostAddress, port));
+        }
     }
 
     @Bean

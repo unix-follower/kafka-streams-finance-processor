@@ -39,8 +39,8 @@ nc -vz $(minikube ip) 9094
 ```
 ### Get Persistent Volumes
 ```shell
-kubectl get pv -n kafka
 kubectl get pvc -n kafka
+kubectl get pv
 ```
 ### Stop Kafka
 ```shell

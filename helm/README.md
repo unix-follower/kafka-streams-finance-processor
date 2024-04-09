@@ -38,8 +38,11 @@ nc -vz $(minikube ip) 8080
 ```
 ### Get Persistent Volumes
 ```shell
-kubectl get pv -n fin-processor
 kubectl get pvc -n fin-processor
+```
+### Stop finance processor
+```shell
+kubectl -n fin-processor scale rs fin-processor-<ID> --replicas 0
 ```
 ### Uninstall chart
 ```shell

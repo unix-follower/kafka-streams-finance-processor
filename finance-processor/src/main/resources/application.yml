@@ -16,7 +16,7 @@ spring:
       application-id: ${spring.application.name}
       state-dir: ${SPRING_KAFKA_STREAMS_STATE_DIR:}
       properties:
-        application.server: ${SPRING_KAFKA_STREAMS_PROPERTIES_APPLICATION_SERVER:localhost:8081}
+        application.server: ${SPRING_KAFKA_STREAMS_PROPERTIES_APPLICATION_SERVER:$(localhostIPv4:8081)}
 
 server:
   port: ${SERVER_PORT:8081}
@@ -26,6 +26,7 @@ logging:
   level:
     org.zalando.logbook: TRACE
     org.apache.kafka: INFO
+    org.example.finprocessor: DEBUG
 
 logbook:
   exclude:

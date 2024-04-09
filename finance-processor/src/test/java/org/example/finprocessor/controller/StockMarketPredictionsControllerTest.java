@@ -66,8 +66,7 @@ class StockMarketPredictionsControllerTest {
         final var expectedResponse = createStockPricePredictionResponse()
             .getLeft();
 
-        final var mockServerWebExchange = ServerWebExchangeFactory.
-            createGetServerRequest("/api/v1/predictions");
+        final var mockServerWebExchange = ServerWebExchangeFactory.createGetPredictionsRequest();
 
         Mockito.when(facadeMock.getPredictions(
                 Mockito.eq(mockServerWebExchange), Mockito.any()
@@ -112,8 +111,7 @@ class StockMarketPredictionsControllerTest {
         final var expectedResponse = createStockPricePredictionResponse()
             .getLeft();
 
-        final var mockServerWebExchange = ServerWebExchangeFactory.
-            createGetServerRequest("/api/v1/predictions");
+        final var mockServerWebExchange = ServerWebExchangeFactory.createGetPredictionsRequest();
 
         Mockito.when(facadeMock.getPredictions(
                 Mockito.eq(mockServerWebExchange), Mockito.any()
@@ -150,8 +148,7 @@ class StockMarketPredictionsControllerTest {
     @Test
     void test_getPredictions_with_prefixScan_search_mode_and_prefix_is_null() {
         // given
-        final var mockServerWebExchange = ServerWebExchangeFactory.
-            createGetServerRequest("/api/v1/predictions");
+        final var mockServerWebExchange = ServerWebExchangeFactory.createGetPredictionsRequest();
 
         StepVerifier
             // when
@@ -221,8 +218,7 @@ class StockMarketPredictionsControllerTest {
     @Test
     void test_getPredictionByTicker() {
         // given
-        final var mockServerWebExchange = ServerWebExchangeFactory.
-            createGetServerRequest("/api/v1/predictions/VOO");
+        final var mockServerWebExchange = ServerWebExchangeFactory.createGetVOOPredictionRequest();
         final var expectedResponse = createStockPricePredictionResponse()
             .getLeft();
 
@@ -264,8 +260,7 @@ class StockMarketPredictionsControllerTest {
     @Test
     void test_getTopPredictions() {
         // given
-        final var mockServerWebExchange = ServerWebExchangeFactory.
-            createGetServerRequest("/api/v1/top/predictions");
+        final var mockServerWebExchange = ServerWebExchangeFactory.createGetTopPredictionsRequest();
         final var stockPricePredictionDto = createStockPricePredictionResponse()
             .getRight();
         final var expectedResponse = TopPredictionFactory.of(stockPricePredictionDto);
@@ -286,10 +281,7 @@ class StockMarketPredictionsControllerTest {
     @Test
     void test_getLossPredictions() {
         // given
-        final var mockServerWebExchange = ServerWebExchangeFactory.
-            createGetServerRequest("/api/v1/loss/predictions");
-        final var stockPricePredictionDto = createStockPricePredictionResponse()
-            .getRight();
+        final var mockServerWebExchange = ServerWebExchangeFactory.createGetLossPredictionsRequest();
         final var expectedResponse = new LossPredictionResponse("VOO", BigDecimal.valueOf(341.3360107421874));
 
         Mockito.when(facadeMock.getLossPredictions(mockServerWebExchange))
