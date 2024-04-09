@@ -21,7 +21,16 @@ public class FinanceProcessor {
         if (!isProdEnv(System.getenv("SPRING_PROFILES_ACTIVE"))) {
             final var appBlockHoundEnabled = System.getenv("APP_BLOCK_HOUND_ENABLED");
             if (isBlockHoundEnabled(appBlockHoundEnabled)) {
-                BlockHound.install();
+                BlockHound.builder()
+                    .allowBlockingCallsInside(
+                        "org.springframework.util.ConcurrentReferenceHashMap$ReferenceManager",
+                        "pollForPurge"
+                    )
+                    .allowBlockingCallsInside(
+                        "org.springframework.web.reactive.DispatcherHandler",
+                        "handle"
+                    )
+                    .install();
             }
             ReactorDebugAgent.init();
         }
