@@ -48,6 +48,7 @@ public class StockMarketPricesControllerFacade {
         new EnumMap<>(PriceSearchMode.class);
 
     private final StreamsBuilderFactoryBean factoryBean;
+    private final AppProperties appProperties;
     private final FinanceProcessorClient financeProcessorClient;
     private final String storeName;
 
@@ -58,6 +59,7 @@ public class StockMarketPricesControllerFacade {
     ) {
         this.factoryBean = factoryBean;
         this.financeProcessorClient = financeProcessorClient;
+        this.appProperties = appProperties;
 
         final var streamProperties = appProperties.stockMarketStream();
         if (WindowType.SESSION == streamProperties.windowType()) {
@@ -142,7 +144,7 @@ public class StockMarketPricesControllerFacade {
                 .filter(streamsMetadata -> !ServerUtil.isSameHost(streamsMetadata.hostInfo(), request))
                 .map(metadata -> String.format(Constants.REMOTE_HOST_FORMAT, metadata.host(), metadata.port()))
                 .toList();
-            LoggerUtil.debug(logger, () -> "Remote hosts: {}", urls);
+            LoggerUtil.printStreamsAppHosts(logger, request, urls);
             return urls;
         });
     }
@@ -233,6 +235,12 @@ public class StockMarketPricesControllerFacade {
                 final var handler = searchModeMap.get(mode);
                 if (handler != null) {
                     handler.accept(fluxSink, params);
+                } else {
+                    final var streamProperties = appProperties.stockMarketStream();
+                    logger.warn(String.format(
+                        "Cannot find handler for mode %s. The current window type is %s",
+                        mode, streamProperties.windowType().name()
+                    ));
                 }
 
                 fluxSink.complete();

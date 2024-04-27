@@ -147,24 +147,22 @@ curl -v ${fin_processor_url}/api/v1/local/loss/predictions | jq
 ```shell
 curl -v "${fin_processor_url}/api/v1/prices?mode=all" | jq
 curl -v "${fin_processor_url}/api/v1/prices?mode=backwardAll" | jq
-curl -v "${fin_processor_url}/api/v1/prices?mode=fetch&key=VOO&timeFrom=2024-03-26T19:04:40.859Z&timeTo=2024-03-26T19:05:11.146Z" | jq
-curl -v "${fin_processor_url}/api/v1/prices?mode=fetchKeyRange&keyFrom=A&keyTo=C&timeFrom=2024-03-26T19:04:40.859Z&timeTo=2024-03-26T19:05:11.146Z" | jq
-curl -v "${fin_processor_url}/api/v1/prices?mode=fetchAll&timeFrom=2024-03-26T19:04:40.859Z&timeTo=2024-03-26T19:05:11.146Z" | jq
-curl -v "${fin_processor_url}/api/v1/prices?mode=backwardFetch&key=VOO&timeFrom=2024-03-26T19:04:40.859Z&timeTo=2024-03-26T19:05:11.146Z" | jq
-curl -v "${fin_processor_url}/api/v1/prices?mode=backwardFetchAll&timeFrom=2024-03-26T19:04:40.859Z&timeTo=2024-03-26T19:05:11.146Z" | jq
-curl -v "${fin_processor_url}/api/v1/prices?mode=backwardFetchKeyRange&keyFrom=A&keyTo=C&timeFrom=2024-03-26T19:04:40.859Z&timeTo=2024-03-26T19:05:11.146Z" | jq
+curl -v "${fin_processor_url}/api/v1/prices?mode=fetch&key=VOO&timeFrom=2024-04-27T15:00:00.000Z&timeTo=2024-04-27T16:00:00.000Z" | jq
+curl -v "${fin_processor_url}/api/v1/prices?mode=fetchKeyRange&keyFrom=A&keyTo=C&timeFrom=2024-04-27T15:00:00.000Z&timeTo=2024-04-27T16:00:00.000Z" | jq
+curl -v "${fin_processor_url}/api/v1/prices?mode=fetchAll&timeFrom=2024-04-27T15:00:00.000Z&timeTo=2024-04-27T16:00:00.000Z" | jq
+curl -v "${fin_processor_url}/api/v1/prices?mode=backwardFetch&key=VOO&timeFrom=2024-04-27T15:00:00.000Z&timeTo=2024-04-27T16:00:00.000Z" | jq
+curl -v "${fin_processor_url}/api/v1/prices?mode=backwardFetchAll&timeFrom=2024-04-27T15:00:00.000Z&timeTo=2024-04-27T16:00:00.000Z" | jq
+curl -v "${fin_processor_url}/api/v1/prices?mode=backwardFetchKeyRange&keyFrom=A&keyTo=C&timeFrom=2024-04-27T15:00:00.000Z&timeTo=2024-04-27T16:00:00.000Z" | jq
 ```
 ##### Get session-based windows
 ```shell
 curl -v "${fin_processor_url}/api/v1/prices?mode=sFetch&key=AAPL" | jq
-curl -v "${fin_processor_url}/api/v1/prices?mode=sFetch&key=AAL" | jq
-curl -v "${fin_processor_url}/api/v1/prices?mode=sessionWindowFetchKeyRange&keyFrom=A&keyTo=C" | jq
 curl -v "${fin_processor_url}/api/v1/prices?mode=sBackwardFetch&key=AAPL" | jq
-curl -v "${fin_processor_url}/api/v1/prices?mode=sFetchSession&key=AAPL&timeFrom=2024-03-26T19:04:40.859Z&timeTo=2024-03-26T19:05:11.146Z" | jq
-curl -v "${fin_processor_url}/api/v1/prices?mode=sFindSessions&key=AAPL&timeFrom=2024-03-26T19:04:40.859Z&timeTo=2024-03-26T19:05:11.146Z" | jq
-curl -v "${fin_processor_url}/api/v1/prices?mode=sFindSessions&key=AAPL&timeFrom=2024-03-26T19:04:40.859Z&timeTo=2024-03-26T19:05:11.146Z" | jq
-curl -v "${fin_processor_url}/api/v1/prices?mode=sBackwardFetchKeyRange&keyFrom=A&keyTo=C" | jq
-curl -v "${fin_processor_url}/api/v1/prices?mode=sBackwardFindSessions&key=AAPL&timeFrom=2024-03-26T19:04:40.859Z&timeTo=2024-03-26T19:05:11.146Z" | jq
+curl -v "${fin_processor_url}/api/v1/prices?mode=sFetchSession&key=AAPL&timeFrom=2024-04-27T15:00:00.000Z&timeTo=2024-04-27T16:00:00.000Z" | jq
+curl -v "${fin_processor_url}/api/v1/prices?mode=sFindSessions&key=HPE&timeFrom=2024-04-27T15:00:00.000Z&timeTo=2024-04-27T16:00:00.000Z" | jq
+curl -v "${fin_processor_url}/api/v1/prices?mode=sFindSessions&key=AAPL&timeFrom=2024-04-27T15:00:00.000Z&timeTo=2024-04-27T16:00:00.000Z" | jq
+curl -v "${fin_processor_url}/api/v1/prices?mode=sBackwardFetchKeyRange&keyFrom=A&keyTo=B" | jq
+curl -v "${fin_processor_url}/api/v1/prices?mode=sBackwardFindSessions&key=AAPL&timeFrom=2024-04-27T15:00:00.000Z&timeTo=2024-04-27T16:00:00.000Z" | jq
 ```
 ### Reset Kafka streams application
 ```shell

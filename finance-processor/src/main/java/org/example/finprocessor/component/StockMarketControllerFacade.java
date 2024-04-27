@@ -93,7 +93,7 @@ public class StockMarketControllerFacade {
                 .filter(streamsMetadata -> !ServerUtil.isSameHost(streamsMetadata.hostInfo(), request))
                 .map(metadata -> String.format(Constants.REMOTE_HOST_FORMAT, metadata.host(), metadata.port()))
                 .toList();
-            LoggerUtil.debug(logger, () -> "Remote hosts: {}", urls);
+            LoggerUtil.printStreamsAppHosts(logger, request, urls);
             return urls;
         });
     }
