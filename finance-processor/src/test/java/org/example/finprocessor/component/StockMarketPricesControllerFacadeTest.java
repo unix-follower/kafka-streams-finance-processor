@@ -70,7 +70,7 @@ class StockMarketPricesControllerFacadeTest {
         Mockito.when(factoryBeanMock.getKafkaStreams()).thenReturn(kafkaStreamsMock);
     }
 
-    private void setupStreamsMetadataForStore(String storeName) {
+    private void setupStreamsMetadataForStore(@SuppressWarnings("SameParameterValue") String storeName) {
         Mockito.when(kafkaStreamsMock.streamsMetadataForStore(storeName))
             .thenReturn(StreamsMetadataFactory.clusterOf3Nodes());
     }
@@ -91,8 +91,7 @@ class StockMarketPricesControllerFacadeTest {
         final var windowEnd = OffsetDateTime.now(ZoneOffset.UTC);
         final var windowStart = windowEnd.minusMinutes(1);
 
-        final var mockServerWebExchange = ServerWebExchangeFactory.
-            createGetServerRequest("/api/v1/prices");
+        final var mockServerWebExchange = ServerWebExchangeFactory.createGetPricesRequest();
 
         final var params = new GetPricesParams(
             PriceSearchMode.ALL,
@@ -148,8 +147,7 @@ class StockMarketPricesControllerFacadeTest {
         Mockito.when(stockPriceSessionStoreMock.fetch(KEY))
             .thenReturn(new InMemoryKeyValueIterator<>(keyValues));
 
-        final var mockServerWebExchange = ServerWebExchangeFactory.
-            createGetServerRequest("/api/v1/prices");
+        final var mockServerWebExchange = ServerWebExchangeFactory.createGetPricesRequest();
 
         final var params = new GetPricesParams(
             PriceSearchMode.SESSION_FETCH,
@@ -199,8 +197,7 @@ class StockMarketPricesControllerFacadeTest {
         Mockito.when(stockPriceSessionStoreMock.fetchSession(KEY, windowStartMs, windowEndMs))
             .thenReturn(prices);
 
-        final var mockServerWebExchange = ServerWebExchangeFactory.
-            createGetServerRequest("/api/v1/prices");
+        final var mockServerWebExchange = ServerWebExchangeFactory.createGetPricesRequest();
 
         final var params = new GetPricesParams(
             PriceSearchMode.SESSION_FETCH_SESSION,
@@ -257,8 +254,7 @@ class StockMarketPricesControllerFacadeTest {
         Mockito.when(stockPriceSessionStoreMock.findSessions(KEY, windowStartMs, windowEndMs))
             .thenReturn(new InMemoryKeyValueIterator<>(keyValues));
 
-        final var mockServerWebExchange = ServerWebExchangeFactory.
-            createGetServerRequest("/api/v1/prices");
+        final var mockServerWebExchange = ServerWebExchangeFactory.createGetPricesRequest();
 
         final var params = new GetPricesParams(
             PriceSearchMode.SESSION_FIND_SESSIONS,
@@ -317,8 +313,7 @@ class StockMarketPricesControllerFacadeTest {
         Mockito.when(stockPriceSessionStoreMock.backwardFindSessions(KEY, windowStartMs, windowEndMs))
             .thenReturn(new InMemoryKeyValueIterator<>(keyValues));
 
-        final var mockServerWebExchange = ServerWebExchangeFactory.
-            createGetServerRequest("/api/v1/prices");
+        final var mockServerWebExchange = ServerWebExchangeFactory.createGetPricesRequest();
 
         final var params = new GetPricesParams(
             PriceSearchMode.SESSION_BACKWARD_FIND_SESSIONS,
@@ -388,8 +383,7 @@ class StockMarketPricesControllerFacadeTest {
         Mockito.when(stockPriceWindowStoreMock.all())
             .thenReturn(iterator);
 
-        final var mockServerWebExchange = ServerWebExchangeFactory.
-            createGetServerRequest("/api/v1/prices");
+        final var mockServerWebExchange = ServerWebExchangeFactory.createGetPricesRequest();
 
         final var params = new GetPricesParams(
             PriceSearchMode.ALL,
@@ -449,8 +443,7 @@ class StockMarketPricesControllerFacadeTest {
         Mockito.when(stockPriceWindowStoreMock.backwardAll())
             .thenReturn(iterator);
 
-        final var mockServerWebExchange = ServerWebExchangeFactory.
-            createGetServerRequest("/api/v1/prices");
+        final var mockServerWebExchange = ServerWebExchangeFactory.createGetPricesRequest();
 
         final var params = new GetPricesParams(
             PriceSearchMode.BACKWARD_ALL,
@@ -509,8 +502,7 @@ class StockMarketPricesControllerFacadeTest {
         Mockito.when(stockPriceWindowStoreMock.fetch(KEY, windowStartInstant, windowEndInstant))
             .thenReturn(new InMemoryWindowStoreIterator<>(keyValues));
 
-        final var mockServerWebExchange = ServerWebExchangeFactory.
-            createGetServerRequest("/api/v1/prices");
+        final var mockServerWebExchange = ServerWebExchangeFactory.createGetPricesRequest();
 
         final var params = new GetPricesParams(
             PriceSearchMode.FETCH,
@@ -579,8 +571,7 @@ class StockMarketPricesControllerFacadeTest {
         Mockito.when(stockPriceWindowStoreMock.fetch(keyFrom, keyTo, windowStartInstant, windowEndInstant))
             .thenReturn(new InMemoryKeyValueIterator<>(keyValues));
 
-        final var mockServerWebExchange = ServerWebExchangeFactory.
-            createGetServerRequest("/api/v1/prices");
+        final var mockServerWebExchange = ServerWebExchangeFactory.createGetPricesRequest();
 
         final var params = new GetPricesParams(
             PriceSearchMode.FETCH_KEY_RANGE,
@@ -647,8 +638,7 @@ class StockMarketPricesControllerFacadeTest {
         Mockito.when(stockPriceWindowStoreMock.fetchAll(windowStartInstant, windowEndInstant))
             .thenReturn(new InMemoryKeyValueIterator<>(keyValues));
 
-        final var mockServerWebExchange = ServerWebExchangeFactory.
-            createGetServerRequest("/api/v1/prices");
+        final var mockServerWebExchange = ServerWebExchangeFactory.createGetPricesRequest();
 
         final var params = new GetPricesParams(
             PriceSearchMode.FETCH_ALL,
@@ -715,8 +705,7 @@ class StockMarketPricesControllerFacadeTest {
         Mockito.when(stockPriceWindowStoreMock.backwardFetchAll(windowStartInstant, windowEndInstant))
             .thenReturn(new InMemoryKeyValueIterator<>(keyValues));
 
-        final var mockServerWebExchange = ServerWebExchangeFactory.
-            createGetServerRequest("/api/v1/prices");
+        final var mockServerWebExchange = ServerWebExchangeFactory.createGetPricesRequest();
 
         final var params = new GetPricesParams(
             PriceSearchMode.BACKWARD_FETCH_ALL,
@@ -777,8 +766,7 @@ class StockMarketPricesControllerFacadeTest {
         Mockito.when(stockPriceWindowStoreMock.backwardFetch(KEY, windowStartInstant, windowEndInstant))
             .thenReturn(new InMemoryWindowStoreIterator<>(keyValues));
 
-        final var mockServerWebExchange = ServerWebExchangeFactory.
-            createGetServerRequest("/api/v1/prices");
+        final var mockServerWebExchange = ServerWebExchangeFactory.createGetPricesRequest();
 
         final var params = new GetPricesParams(
             PriceSearchMode.BACKWARD_FETCH,
@@ -847,8 +835,7 @@ class StockMarketPricesControllerFacadeTest {
         Mockito.when(stockPriceWindowStoreMock.backwardFetch(keyFrom, keyTo, windowStartInstant, windowEndInstant))
             .thenReturn(new InMemoryKeyValueIterator<>(keyValues));
 
-        final var mockServerWebExchange = ServerWebExchangeFactory.
-            createGetServerRequest("/api/v1/prices");
+        final var mockServerWebExchange = ServerWebExchangeFactory.createGetPricesRequest();
 
         final var params = new GetPricesParams(
             PriceSearchMode.BACKWARD_FETCH_KEY_RANGE,
@@ -942,8 +929,7 @@ class StockMarketPricesControllerFacadeTest {
         Mockito.when(stockPriceWindowStoreMock.fetch(keyFrom, keyTo, windowStartInstant, windowEndInstant))
             .thenReturn(new InMemoryKeyValueIterator<>(keyValues));
 
-        final var mockServerWebExchange = ServerWebExchangeFactory.
-            createGetServerRequest("/api/v1/prices");
+        final var mockServerWebExchange = ServerWebExchangeFactory.createGetPricesRequest();
 
         final var params = new GetPricesParams(
             PriceSearchMode.FETCH_KEY_RANGE,

@@ -16,7 +16,7 @@ spring:
       application-id: ${spring.application.name}
       state-dir: ${SPRING_KAFKA_STREAMS_STATE_DIR:}
       properties:
-        application.server: ${SPRING_KAFKA_STREAMS_PROPERTIES_APPLICATION_SERVER:localhost:8081}
+        application.server: ${SPRING_KAFKA_STREAMS_PROPERTIES_APPLICATION_SERVER:$(localhostIPv4:8081)}
 
 server:
   port: ${SERVER_PORT:8081}
@@ -26,6 +26,7 @@ logging:
   level:
     org.zalando.logbook: TRACE
     org.apache.kafka: INFO
+    org.example.finprocessor: DEBUG
 
 logbook:
   exclude:
@@ -53,7 +54,7 @@ app:
     access-control-allow-headers: ${APP_CORS_ACCESS_CONTROL_ALLOW_HEADERS:*}
   fin-processor:
     connection-timeout: ${APP_FIN_PROCESSOR_CONNECTION_TIMEOUT:PT30s}
-    read-timeout: ${APP_FIN_PROCESSOR_READ_TIMEOUT:PT30s}
+    read-timeout: ${APP_FIN_PROCESSOR_READ_TIMEOUT:PT2m}
     connection-max-idle-time: ${APP_FIN_PROCESSOR_CONNECTION_MAX_IDLE_TIME:PT30s}
     connection-max-life-time: ${APP_FIN_PROCESSOR_CONNECTION_MAX_LIFE_TIME:PT30s}
     connection-eviction-time: ${APP_FIN_PROCESSOR_CONNECTION_EVICTION_TIME:PT90s}

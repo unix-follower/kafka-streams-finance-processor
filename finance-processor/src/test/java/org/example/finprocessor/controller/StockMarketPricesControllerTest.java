@@ -70,8 +70,7 @@ class StockMarketPricesControllerTest {
     @Test
     void test_invalid_search_mode() {
         // given
-        final var mockServerWebExchange = ServerWebExchangeFactory.
-            createGetServerRequest("/api/v1/prices");
+        final var mockServerWebExchange = ServerWebExchangeFactory.createGetPricesRequest();
 
         StepVerifier
             // when
@@ -145,8 +144,7 @@ class StockMarketPricesControllerTest {
         final var expectedResponse = createStockPricePredictionResponse()
             .getLeft();
 
-        final var mockServerWebExchange = ServerWebExchangeFactory.
-            createGetServerRequest("/api/v1/prices");
+        final var mockServerWebExchange = ServerWebExchangeFactory.createGetPricesRequest();
 
         Mockito.when(facadeMock.getPrices(
                 Mockito.eq(mockServerWebExchange), Mockito.any()
@@ -187,8 +185,7 @@ class StockMarketPricesControllerTest {
         final var expectedResponse = createStockPricePredictionResponse()
             .getLeft();
 
-        final var mockServerWebExchange = ServerWebExchangeFactory.
-            createGetServerRequest("/api/v1/prices");
+        final var mockServerWebExchange = ServerWebExchangeFactory.createGetPricesRequest();
 
         Mockito.when(facadeMock.getPrices(
                 Mockito.eq(mockServerWebExchange), Mockito.any()
@@ -226,8 +223,7 @@ class StockMarketPricesControllerTest {
         final var expectedResponse = createStockPricePredictionResponse()
             .getLeft();
 
-        final var mockServerWebExchange = ServerWebExchangeFactory.
-            createGetServerRequest("/api/v1/prices");
+        final var mockServerWebExchange = ServerWebExchangeFactory.createGetPricesRequest();
 
         Mockito.when(facadeMock.getPrices(
                 Mockito.eq(mockServerWebExchange), Mockito.any()
@@ -270,8 +266,7 @@ class StockMarketPricesControllerTest {
         final var expectedResponse = createStockPricePredictionResponse()
             .getLeft();
 
-        final var mockServerWebExchange = ServerWebExchangeFactory.
-            createGetServerRequest("/api/v1/prices");
+        final var mockServerWebExchange = ServerWebExchangeFactory.createGetPricesRequest();
 
         Mockito.when(facadeMock.getPrices(
                 Mockito.eq(mockServerWebExchange), Mockito.any()
@@ -337,8 +332,7 @@ class StockMarketPricesControllerTest {
         final var expectedResponse = createStockPricePredictionResponse()
             .getLeft();
 
-        final var mockServerWebExchange = ServerWebExchangeFactory.
-            createGetServerRequest("/api/v1/prices");
+        final var mockServerWebExchange = ServerWebExchangeFactory.createGetPricesRequest();
 
         Mockito.when(facadeMock.getPrices(
                 Mockito.eq(mockServerWebExchange), Mockito.any()
@@ -507,8 +501,7 @@ class StockMarketPricesControllerTest {
     })
     void test_bad_request(String name, GetPricesParams params, String expectedErrorMsg) {
         // given
-        final var mockServerWebExchange = ServerWebExchangeFactory.
-            createGetServerRequest("/api/v1/prices");
+        final var mockServerWebExchange = ServerWebExchangeFactory.createGetPricesRequest();
 
         StepVerifier
             // when

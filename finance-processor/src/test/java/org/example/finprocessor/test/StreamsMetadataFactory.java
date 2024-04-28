@@ -16,11 +16,15 @@ public class StreamsMetadataFactory {
     private static final byte THIRD_PARTITION_INDEX = 2;
 
     public static final short SERVER_PORT = 8080;
-    public static final String NODE2_HOSTNAME = "fin-processor-node2";
-    public static final String REMOTE_HOST_URL_FORMAT = "http://%s:%d";
-    public static final String NODE2_URL = String.format(REMOTE_HOST_URL_FORMAT, NODE2_HOSTNAME, SERVER_PORT);
-    public static final String NODE3_HOSTNAME = "fin-processor-node3";
-    public static final String NODE3_URL = String.format(REMOTE_HOST_URL_FORMAT, NODE3_HOSTNAME, SERVER_PORT);
+    private static final String REMOTE_HOST_URL_FORMAT = "http://%s:%d";
+
+    public static final String NODE1_IP = "10.244.4.1";
+
+    public static final String NODE2_IP = "10.244.4.2";
+    public static final String NODE2_URL = String.format(REMOTE_HOST_URL_FORMAT, NODE2_IP, SERVER_PORT);
+
+    public static final String NODE3_IP = "10.244.4.3";
+    public static final String NODE3_URL = String.format(REMOTE_HOST_URL_FORMAT, NODE3_IP, SERVER_PORT);
 
     public static Collection<StreamsMetadata> clusterOf3Nodes() {
         final var stores = Set.of(
@@ -44,7 +48,7 @@ public class StreamsMetadataFactory {
         );
 
         final var localhost = new StreamsMetadataImpl(
-            new HostInfo("localhost", SERVER_PORT),
+            new HostInfo(NODE1_IP, SERVER_PORT),
             stores,
             node1TopicPartitions,
             Collections.emptySet(),
@@ -60,7 +64,7 @@ public class StreamsMetadataFactory {
         );
 
         final var node2 = new StreamsMetadataImpl(
-            new HostInfo(NODE2_HOSTNAME, SERVER_PORT),
+            new HostInfo(NODE2_IP, SERVER_PORT),
             stores,
             node2TopicPartitions,
             Collections.emptySet(),
@@ -76,7 +80,7 @@ public class StreamsMetadataFactory {
         );
 
         final var node3 = new StreamsMetadataImpl(
-            new HostInfo(NODE3_HOSTNAME, SERVER_PORT),
+            new HostInfo(NODE3_IP, SERVER_PORT),
             stores,
             node3TopicPartitions,
             Collections.emptySet(),

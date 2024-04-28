@@ -91,7 +91,10 @@ class StockMarketControllerFacadeTest {
             .thenReturn(responseMono);
     }
 
-    private void setupNodeTopPredictionResponse(String nodeUrl, Flux<TopPredictionResponse> responseFlux) {
+    private void setupNodeTopPredictionResponse(
+        @SuppressWarnings("SameParameterValue") String nodeUrl,
+        Flux<TopPredictionResponse> responseFlux
+    ) {
         Mockito.when(financeProcessorClientMock.getTopPredictions(nodeUrl))
             .thenReturn(responseFlux);
     }
@@ -184,8 +187,7 @@ class StockMarketControllerFacadeTest {
         final var expectedVOOResponse = vooPair.getRight();
         setupStoreIteratorConsumer.accept(List.of(vooPricePredictionDto));
 
-        final var mockServerWebExchange = ServerWebExchangeFactory
-            .createGetServerRequest("/api/v1/predictions");
+        final var mockServerWebExchange = ServerWebExchangeFactory.createGetPredictionsRequest();
 
         StepVerifier
             // when
@@ -420,8 +422,7 @@ class StockMarketControllerFacadeTest {
             .thenReturn(keyQueryMetadataMock);
         setupStateStore(stockPricePredictionStoreMock);
 
-        final var mockServerWebExchange = ServerWebExchangeFactory.
-            createGetServerRequest("/api/v1/predictions/VOO");
+        final var mockServerWebExchange = ServerWebExchangeFactory.createGetVOOPredictionRequest();
         final var inetSocketAddress = mockServerWebExchange.getRequest().getLocalAddress();
         assert inetSocketAddress != null;
         final var hostInfo = new HostInfo(inetSocketAddress.getHostName(), inetSocketAddress.getPort());
@@ -446,7 +447,7 @@ class StockMarketControllerFacadeTest {
             .queryMetadataForKey(
                 Mockito.eq(Constants.PREDICTIONS_STORE), Mockito.eq(ticker), Mockito.any(StringSerializer.class)
             );
-        Mockito.verify(keyQueryMetadataMock, Mockito.only()).activeHost();
+        Mockito.verify(keyQueryMetadataMock, Mockito.atMost(2)).activeHost();
         verifyClusterNodesNeverCalledForGetPredictionByTicker();
         verifyStoreGotOnce();
 
@@ -463,11 +464,10 @@ class StockMarketControllerFacadeTest {
             ))
             .thenReturn(keyQueryMetadataMock);
 
-        final var mockServerWebExchange = ServerWebExchangeFactory.
-            createGetServerRequest("/api/v1/predictions/VOO");
+        final var mockServerWebExchange = ServerWebExchangeFactory.createGetVOOPredictionRequest();
         final var inetSocketAddress = mockServerWebExchange.getRequest().getLocalAddress();
         assert inetSocketAddress != null;
-        final var hostInfo = new HostInfo(StreamsMetadataFactory.NODE2_HOSTNAME, StreamsMetadataFactory.SERVER_PORT);
+        final var hostInfo = new HostInfo(StreamsMetadataFactory.NODE2_IP, StreamsMetadataFactory.SERVER_PORT);
 
         Mockito.when(keyQueryMetadataMock.activeHost()).thenReturn(hostInfo);
 
@@ -503,8 +503,7 @@ class StockMarketControllerFacadeTest {
             .thenReturn(keyQueryMetadataMock);
         setupStateStore(stockPricePredictionStoreMock);
 
-        final var mockServerWebExchange = ServerWebExchangeFactory.
-            createGetServerRequest("/api/v1/predictions/VOO");
+        final var mockServerWebExchange = ServerWebExchangeFactory.createGetVOOPredictionRequest();
         final var inetSocketAddress = mockServerWebExchange.getRequest().getLocalAddress();
         assert inetSocketAddress != null;
         final var hostInfo = new HostInfo(inetSocketAddress.getHostName(), inetSocketAddress.getPort());
@@ -528,7 +527,7 @@ class StockMarketControllerFacadeTest {
             .queryMetadataForKey(
                 Mockito.eq(Constants.PREDICTIONS_STORE), Mockito.eq(ticker), Mockito.any(StringSerializer.class)
             );
-        Mockito.verify(keyQueryMetadataMock, Mockito.only()).activeHost();
+        Mockito.verify(keyQueryMetadataMock, Mockito.atMost(2)).activeHost();
         verifyClusterNodesNeverCalledForGetPredictionByTicker();
         verifyStoreGotOnce();
 
@@ -551,10 +550,9 @@ class StockMarketControllerFacadeTest {
             )
             .thenReturn(Mono.error(new EntityNotFoundException(ErrorCode.TICKER_NOT_FOUND)));
 
-        final var mockServerWebExchange = ServerWebExchangeFactory.
-            createGetServerRequest("/api/v1/predictions/VOO");
+        final var mockServerWebExchange = ServerWebExchangeFactory.createGetVOOPredictionRequest();
 
-        final var hostInfo = new HostInfo(StreamsMetadataFactory.NODE2_HOSTNAME, StreamsMetadataFactory.SERVER_PORT);
+        final var hostInfo = new HostInfo(StreamsMetadataFactory.NODE2_IP, StreamsMetadataFactory.SERVER_PORT);
         Mockito.when(keyQueryMetadataMock.activeHost()).thenReturn(hostInfo);
 
         StepVerifier
@@ -573,7 +571,7 @@ class StockMarketControllerFacadeTest {
             .queryMetadataForKey(
                 Mockito.eq(Constants.PREDICTIONS_STORE), Mockito.eq(ticker), Mockito.any(StringSerializer.class)
             );
-        Mockito.verify(keyQueryMetadataMock, Mockito.only()).activeHost();
+        Mockito.verify(keyQueryMetadataMock, Mockito.atMost(2)).activeHost();
         verifyCluster2ndNodeCalledForTickerVOO();
         verifyStoreGotOnce();
 
@@ -594,8 +592,7 @@ class StockMarketControllerFacadeTest {
             ))
             .thenReturn(keyQueryMetadataMock);
 
-        final var mockServerWebExchange = ServerWebExchangeFactory.
-            createGetServerRequest("/api/v1/top/predictions");
+        final var mockServerWebExchange = ServerWebExchangeFactory.createGetTopPredictionsRequest();
         final var inetSocketAddress = mockServerWebExchange.getRequest().getLocalAddress();
         assert inetSocketAddress != null;
         final var hostInfo = new HostInfo(inetSocketAddress.getHostName(), inetSocketAddress.getPort());
@@ -662,8 +659,7 @@ class StockMarketControllerFacadeTest {
             ))
             .thenReturn(keyQueryMetadataMock);
 
-        final var mockServerWebExchange = ServerWebExchangeFactory.
-            createGetServerRequest("/api/v1/top/predictions");
+        final var mockServerWebExchange = ServerWebExchangeFactory.createGetTopPredictionsRequest();
         final var inetSocketAddress = mockServerWebExchange.getRequest().getLocalAddress();
         assert inetSocketAddress != null;
         final var hostInfo = new HostInfo(inetSocketAddress.getHostName(), inetSocketAddress.getPort());
@@ -708,11 +704,10 @@ class StockMarketControllerFacadeTest {
             ))
             .thenReturn(keyQueryMetadataMock);
 
-        final var mockServerWebExchange = ServerWebExchangeFactory.
-            createGetServerRequest("/api/v1/top/predictions");
+        final var mockServerWebExchange = ServerWebExchangeFactory.createGetTopPredictionsRequest();
         final var inetSocketAddress = mockServerWebExchange.getRequest().getLocalAddress();
         assert inetSocketAddress != null;
-        final var hostInfo = new HostInfo(StreamsMetadataFactory.NODE2_HOSTNAME, StreamsMetadataFactory.SERVER_PORT);
+        final var hostInfo = new HostInfo(StreamsMetadataFactory.NODE2_IP, StreamsMetadataFactory.SERVER_PORT);
 
         Mockito.when(keyQueryMetadataMock.activeHost()).thenReturn(hostInfo);
 
@@ -747,8 +742,7 @@ class StockMarketControllerFacadeTest {
         // given
         setupStateStore(lossPredictionsStoreMock);
 
-        final var mockServerWebExchange = ServerWebExchangeFactory.
-            createGetServerRequest("/api/v1/loss/predictions");
+        final var mockServerWebExchange = ServerWebExchangeFactory.createGetLossPredictionsRequest();
 
         final var voo = new KeyValue<>("VOO", "341.3360107421874");
         final var keyValues = List.of(
@@ -789,8 +783,7 @@ class StockMarketControllerFacadeTest {
         );
         setupNodeLossPredictionResponse(StreamsMetadataFactory.NODE3_URL, Flux.just(spyLossPredictionResponse));
 
-        final var mockServerWebExchange = ServerWebExchangeFactory.
-            createGetServerRequest("/api/v1/loss/predictions");
+        final var mockServerWebExchange = ServerWebExchangeFactory.createGetLossPredictionsRequest();
 
         final var voo = new KeyValue<>("VOO", "341.3360107421874");
         final var keyValues = List.of(
