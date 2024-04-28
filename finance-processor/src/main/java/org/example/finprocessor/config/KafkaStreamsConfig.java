@@ -113,6 +113,15 @@ public class KafkaStreamsConfig {
             .build();
     }
 
+    @Bean
+    NewTopic stockMarketDltTopic() {
+        final var topic = appProperties.stockMarketRouterStream().inputTopic();
+        return TopicBuilder.name(String.format("%s.DLT", topic))
+            .partitions(3)
+            .replicas(1)
+            .build();
+    }
+
     private NewTopic createNewRouterTopic(String topicSuffix) {
         final var topicPrefix = appProperties.stockMarketRouterStream().inputTopic();
         final var topic = topicPrefix + topicSuffix;
