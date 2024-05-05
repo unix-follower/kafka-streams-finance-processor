@@ -1,6 +1,6 @@
 subprojects {
   group = "com.example.finprocessor"
-  version = System.getenv("APP_VERSION") ?: "2024.04.0"
+  version = System.getenv("APP_VERSION") ?: "2024.05.0"
 
   repositories {
     mavenCentral()

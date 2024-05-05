@@ -38,6 +38,8 @@ management:
     health:
       probes:
         enabled: true
+    prometheus:
+      enabled: true
   endpoints:
     web:
       exposure:
@@ -46,6 +48,7 @@ management:
           - info
           - metrics
           - mappings
+          - prometheus
 
 app:
   cors:
