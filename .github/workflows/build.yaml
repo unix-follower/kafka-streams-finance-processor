@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       app-version-override:
-        description: "Manually specified app version. Example: 2024.04.0"
+        description: "Manually specified app version. Example: 2024.05.0"
         required: false
   push:
     branches:
@@ -54,7 +54,7 @@ jobs:
           if [ -n "${{ inputs.app-version-override }}" ]; then
             APP_VERSION="${{ inputs.app-version-override }}"
           else
-            APP_VERSION="2024.04.${{ github.run_id }}"
+            APP_VERSION="2024.05.${{ github.run_id }}"
           fi
           echo "APP_VERSION=$APP_VERSION" >> $GITHUB_ENV
 

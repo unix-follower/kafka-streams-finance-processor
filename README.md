@@ -1,7 +1,7 @@
 ### Docker commands
 #### Build an image
 ```shell
-docker build --build-arg APP_VERSION=2024.04.0 -t finance-processor:latest .
+docker build --build-arg APP_VERSION=2024.05.0 -t finance-processor:latest .
 ```
 #### Start Kafka in Docker container
 ```shell
@@ -123,6 +123,10 @@ ${kafka_dir}/kafka-console-consumer.sh --bootstrap-server $bootstrap_server \
  --partition 0
 ```
 ## API calls
+#### Get Prometheus metrics
+```shell
+curl -v ${fin_processor_url}/actuator/prometheus
+```
 #### Get predictions
 ```shell
 curl -v ${fin_processor_url}/api/v1/predictions/EPAM | jq
