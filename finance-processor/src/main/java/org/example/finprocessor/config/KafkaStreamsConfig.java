@@ -1,12 +1,16 @@
 package org.example.finprocessor.config;
 
+import io.micrometer.observation.ObservationRegistry;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.streams.StreamsConfig;
+import org.example.finprocessor.component.TracingConsumerInterceptor;
+import org.example.finprocessor.component.TracingProducerInterceptor;
 import org.example.finprocessor.exception.FinProcessorProductionExceptionHandler;
 import org.example.finprocessor.exception.FinProcessorStreamsUncaughtExceptionHandler;
 import org.springframework.beans.factory.BeanCreationException;
@@ -47,7 +51,7 @@ public class KafkaStreamsConfig {
 
     @SuppressWarnings("resource")
     @Bean(name = KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME)
-    public KafkaStreamsConfiguration kafkaStreamsConfig() {
+    public KafkaStreamsConfiguration kafkaStreamsConfig(ObservationRegistry observationRegistry) {
         final var props = kafkaProperties.buildStreamsProperties(null);
 
         final var consumer = kafkaProperties.getConsumer();
@@ -57,6 +61,16 @@ public class KafkaStreamsConfig {
             .get(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG);
         final int maxPollIntervalMs = (int) Duration.parse(maxPollIntervalMsAsString).toMillis();
         props.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, maxPollIntervalMs);
+
+        props.put(
+            StreamsConfig.PRODUCER_PREFIX + ProducerConfig.INTERCEPTOR_CLASSES_CONFIG,
+            TracingProducerInterceptor.class.getName()
+        );
+        props.put(
+            StreamsConfig.CONSUMER_PREFIX + ConsumerConfig.INTERCEPTOR_CLASSES_CONFIG,
+            TracingConsumerInterceptor.class.getName()
+        );
+        props.put(ObservationRegistry.class.getName(), observationRegistry);
 
         props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
         props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.ByteArray().getClass().getName());
@@ -171,7 +185,9 @@ public class KafkaStreamsConfig {
             props, new StringSerializer(), new ByteArraySerializer()
         );
 
-        return new KafkaTemplate<>(producerFactory);
+        final var template = new KafkaTemplate<>(producerFactory);
+        template.setObservationEnabled(true);
+        return template;
     }
 
     @Bean

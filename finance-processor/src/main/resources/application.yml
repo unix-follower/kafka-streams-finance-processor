@@ -49,6 +49,13 @@ management:
           - metrics
           - mappings
           - prometheus
+  tracing:
+    enabled: ${MANAGEMENT_TRACING_ENABLED:true}
+    sampling:
+      probability: 1.0
+  zipkin:
+    tracing:
+      endpoint: ${MANAGEMENT_TRACING_ZIPKIN_ENDPOINT:}
 
 app:
   cors:

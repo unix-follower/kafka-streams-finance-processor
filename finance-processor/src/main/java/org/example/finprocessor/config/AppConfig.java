@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.cfg.JsonNodeFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.opencsv.CSVReader;
 import com.opencsv.bean.CsvToBeanBuilder;
+import io.micrometer.observation.ObservationRegistry;
 import io.netty.channel.ChannelOption;
 import org.example.finprocessor.stockmarket.api.StockType;
 import org.example.finprocessor.stockmarket.api.StockTypeCsvRecord;
@@ -85,7 +86,11 @@ public class AppConfig extends DelegatingWebFluxConfiguration {
     }
 
     @Bean
-    WebClientCustomizer finProcessorWebClientCustomizer(ObjectMapper objectMapper, Logbook logbook) {
+    WebClientCustomizer finProcessorWebClientCustomizer(
+        ObjectMapper objectMapper,
+        Logbook logbook,
+        ObservationRegistry observationRegistry
+    ) {
         final var finProcessor = appProperties.finProcessor();
 
         final var httpClient = HttpClient.create(
@@ -100,6 +105,7 @@ public class AppConfig extends DelegatingWebFluxConfiguration {
 
         return webClientBuilder -> webClientBuilder.clientConnector(new ReactorClientHttpConnector(httpClient))
             .filter(new LogbookExchangeFilterFunction(logbook))
+            .observationRegistry(observationRegistry)
             .exchangeStrategies(ExchangeStrategies.builder()
                 .codecs(configurer -> {
                     final var customCodecs = configurer.customCodecs();
