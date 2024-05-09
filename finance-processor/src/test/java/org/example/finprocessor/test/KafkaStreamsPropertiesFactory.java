@@ -1,5 +1,6 @@
 package org.example.finprocessor.test;
 
+import io.micrometer.observation.ObservationRegistry;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.streams.StreamsConfig;
 import org.example.finprocessor.config.AppProperties;
@@ -37,6 +38,7 @@ public class KafkaStreamsPropertiesFactory {
     public Properties create() {
         final var kafkaProperties = createKafkaProperties();
         final var config = new KafkaStreamsConfig(kafkaProperties, appProperties);
-        return config.kafkaStreamsConfig().asProperties();
+        final var observationRegistry = ObservationRegistry.create();
+        return config.kafkaStreamsConfig(observationRegistry).asProperties();
     }
 }

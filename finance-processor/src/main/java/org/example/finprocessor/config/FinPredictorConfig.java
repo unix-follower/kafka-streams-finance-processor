@@ -1,6 +1,7 @@
 package org.example.finprocessor.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.micrometer.observation.ObservationRegistry;
 import io.netty.channel.ChannelOption;
 import org.springframework.boot.web.reactive.function.client.WebClientCustomizer;
 import org.springframework.context.annotation.Bean;
@@ -25,7 +26,11 @@ class FinPredictorConfig {
     }
 
     @Bean
-    WebClientCustomizer finPredictorWebClientCustomizer(ObjectMapper objectMapper, Logbook logbook) {
+    WebClientCustomizer finPredictorWebClientCustomizer(
+        ObjectMapper objectMapper,
+        Logbook logbook,
+        ObservationRegistry observationRegistry
+    ) {
         final var finPredictor = appProperties.finPredictor();
 
         final var httpClient = HttpClient.create(
@@ -37,9 +42,9 @@ class FinPredictorConfig {
             )
             .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, (int) finPredictor.connectionTimeout().toMillis())
             .responseTimeout(finPredictor.readTimeout());
-
         return webClientBuilder -> webClientBuilder.clientConnector(new ReactorClientHttpConnector(httpClient))
             .filter(new LogbookExchangeFilterFunction(logbook))
+            .observationRegistry(observationRegistry)
             .exchangeStrategies(ExchangeStrategies.builder()
                 .codecs(configurer -> {
                     final var customCodecs = configurer.customCodecs();

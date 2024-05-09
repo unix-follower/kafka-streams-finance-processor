@@ -1,0 +1,3 @@
+ingress:
+  enabled: true
+  host: zipkin.observability.svc.cluster.local

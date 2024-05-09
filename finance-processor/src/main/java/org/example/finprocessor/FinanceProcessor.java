@@ -6,12 +6,14 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.reactive.ReactiveUserDetailsServiceAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import reactor.blockhound.BlockHound;
+import reactor.core.publisher.Hooks;
 import reactor.tools.agent.ReactorDebugAgent;
 
 @SpringBootApplication(exclude = {ReactiveUserDetailsServiceAutoConfiguration.class})
 @EnableConfigurationProperties({AppProperties.class})
 public class FinanceProcessor {
     public static void main(String[] args) {
+        Hooks.enableAutomaticContextPropagation();
         initDebugAgentsIfNotProd();
 
         SpringApplication.run(FinanceProcessor.class, args);

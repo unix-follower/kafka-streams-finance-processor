@@ -11,3 +11,4 @@ data:
   SPRING_KAFKA_STREAMS_PROPERTIES_APPLICATION_SERVER: "$(localhostIPv4:8080)"
   APP_FIN_PREDICTOR_URL: http://fin-predictor.fin-processor.svc.cluster.local:5000
   APP_STOCK_MARKET_STREAM_WINDOW: PT30s
+  MANAGEMENT_TRACING_ZIPKIN_ENDPOINT: http://zipkin.observability.svc.cluster.local:9411/api/v2/spans
