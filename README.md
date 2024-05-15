@@ -168,8 +168,63 @@ curl -v "${fin_processor_url}/api/v1/prices?mode=sFindSessions&key=AAPL&timeFrom
 curl -v "${fin_processor_url}/api/v1/prices?mode=sBackwardFetchKeyRange&keyFrom=A&keyTo=B" | jq
 curl -v "${fin_processor_url}/api/v1/prices?mode=sBackwardFindSessions&key=AAPL&timeFrom=2024-04-27T15:00:00.000Z&timeTo=2024-04-27T16:00:00.000Z" | jq
 ```
-### Reset Kafka streams application
+### Reset Kafka Streams application
 ```shell
 ${kafka_dir}/kafka-streams-application-reset.sh --bootstrap-server $bootstrap_server \
  --application-id fin-processor
+```
+### Query the metrics
+#### JVM metrics
+```promql
+rate(jvm_threads_started_threads_total[30m])
+avg_over_time(jvm_threads_started_threads_total[30m])
+jvm_threads_states_threads
+```
+#### HTTP server request metrics
+```promql
+max_over_time(http_server_requests_active_seconds_max[30m])
+quantile(0.9, http_server_requests_active_seconds_duration_sum)
+sum_over_time(http_server_requests_active_seconds_duration_sum[30m])
+```
+#### Kafka Streams task metrics
+```promql
+irate(kafka_stream_task_dropped_records_total[30m])
+irate(kafka_stream_task_restore_rate[30m])
+max_over_time(kafka_stream_task_active_buffer_count[30m])
+```
+#### Kafka Streams thread metrics
+```promql
+max_over_time(kafka_stream_thread_process_records_max[30m])
+delta(kafka_stream_thread_poll_rate[30m])
+max_over_time(kafka_stream_thread_poll_records_max[30m])
+increase(kafka_stream_thread_process_total[30m])
+```
+#### Kafka Streams topic metrics
+```promql
+increase(kafka_stream_topic_records_produced_total[30m])
+increase(kafka_stream_topic_bytes_consumed_total[30m])
+```
+#### Kafka producer metrics
+```promql
+deriv(kafka_producer_metadata_age[30m])
+increase(kafka_producer_node_outgoing_byte_total[30m])
+```
+#### Kafka consumer metrics
+```promql
+increase(kafka_consumer_fetch_manager_records_consumed_total[30m])
+max_over_time(kafka_consumer_request_size_max[30m])
+avg_over_time(kafka_consumer_request_size_max[30m])
+increase(kafka_consumer_incoming_byte_total[30m])
+max(kafka_consumer_incoming_byte_rate)
+```
+#### Kafka Streams consumer coordinator metrics
+```promql
+increase(kafka_consumer_coordinator_rebalance_total[30m])
+```
+#### Kafka Streams state store metrics
+```promql
+max_over_time(kafka_stream_state_num_entries_active_mem_table[30m])
+max_over_time(kafka_stream_state_num_running_compactions[30m])
+increase(kafka_stream_state_bytes_read_total[1d])
+max_over_time(kafka_stream_state_bytes_read_rate[30m])
 ```

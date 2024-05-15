@@ -29,7 +29,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.netty.LogbookServerHandler;
 import org.zalando.logbook.spring.webflux.LogbookExchangeFilterFunction;
-import reactor.netty.channel.MicrometerChannelMetricsRecorder;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.resources.ConnectionProvider;
 
@@ -81,7 +80,6 @@ public class AppConfig extends DelegatingWebFluxConfiguration {
     @Bean
     NettyServerCustomizer nettyServerCustomizer(Logbook logbook) {
         return server -> server
-            .metrics(true, () -> new MicrometerChannelMetricsRecorder("netty_server", "http"))
             .doOnConnection(connection -> connection.addHandlerLast(new LogbookServerHandler(logbook)));
     }
 
